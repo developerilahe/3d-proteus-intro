@@ -1,0 +1,6 @@
+{
+  "name": "PROTEUS — How It Works (3D Intelligence Architecture)",
+  "description": "Interactive 3D architectural briefing explaining how PROTEUS generates permutations, resolves infrastructure, detects identity drift and PreCrime staging, correlates OSINT, and delivers takedown and MISP response.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

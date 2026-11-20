@@ -1,0 +1,312 @@
+/**
+ * PROTEUS — Plain-Language 7-Step Executive Briefing Data
+ */
+
+export const TECHNIQUES_17_WEIGHTS = [
+  90, 90, 90,
+  75, 70, 70, 70, 70, 65, 65,
+  55, 50, 50, 50, 45, 45, 45,
+];
+
+export const BRAND_PROFILES = {
+  'pashabank.az': {
+    brand: 'pashabank.az',
+    baselineIp: '185.18.245.14',
+    baselinePosture: 'Strict email protection on',
+    lookalikeDomain: 'pashabank-portal.com',
+    homoglyphSample: 'pashabаnk.az',
+    parkedSample: 'pashab4nk.az',
+    activeIp: '185.219.142.88',
+    asnGeo: 'Foreign server · Vilnius',
+    spfStatus: 'Weak setup',
+    dmarcStatus: 'Weak email protection',
+    tlsAge: '2 days old',
+    preCrimeScore: 74,
+    preCrimeThreshold: '60',
+    exposureLow: '$8K–$49K',
+    exposureHigh: '$120K+',
+    signals: [
+      { label: 'Looks like your brand', weight: 'High cue', tone: 'amber' },
+      { label: 'Brand new padlock', weight: 'Medium cue', tone: 'amber' },
+      { label: 'Weak email lock', weight: 'Watch cue', tone: 'blue' },
+      { label: 'Uses login wording', weight: 'High cue', tone: 'rust' },
+    ],
+    driftBefore: 'Parked page · No email',
+    driftAfter: 'Live server · Fake login',
+    osintRows: [
+      { k: 'Domain age', v: 'Registered 6 days ago' },
+      { k: 'Security check', v: 'Copied login form found' },
+      { k: 'Page look', v: 'Cloned brand design' },
+      { k: 'Hosting', v: 'Private server · Vilnius' },
+    ],
+    takedownTarget: 'Takedown Report',
+  },
+  'acmecorp.com': {
+    brand: 'acmecorp.com',
+    baselineIp: '198.51.100.22',
+    baselinePosture: 'Strict email protection on',
+    lookalikeDomain: 'acmecorp-vendor.com',
+    homoglyphSample: 'асmecorp.com',
+    parkedSample: 'acmec0rp.com',
+    activeIp: '104.21.48.191',
+    asnGeo: 'Shared cloud server',
+    spfStatus: 'Active mail sender',
+    dmarcStatus: 'Weak email protection',
+    tlsAge: '5 days old',
+    preCrimeScore: 68,
+    preCrimeThreshold: '60',
+    exposureLow: '$12K–$65K',
+    exposureHigh: '$140K+',
+    signals: [
+      { label: 'Adds "-vendor" to name', weight: 'High cue', tone: 'amber' },
+      { label: 'Email sending turned on', weight: 'High cue', tone: 'rust' },
+      { label: 'Weak email lock', weight: 'Watch cue', tone: 'blue' },
+      { label: 'Uses billing wording', weight: 'Medium cue', tone: 'amber' },
+    ],
+    driftBefore: 'Blocked page · No email',
+    driftAfter: 'Email live · Billing portal',
+    osintRows: [
+      { k: 'Domain age', v: 'Registered 8 days ago' },
+      { k: 'Security check', v: 'Copied vendor form found' },
+      { k: 'Page look', v: 'Fake billing portal' },
+      { k: 'Hosting', v: 'Shared cloud server' },
+    ],
+    takedownTarget: 'Takedown Report',
+  },
+};
+
+export const WALKTHROUGH_STEPS = [
+  {
+    id: 'step-1',
+    index: '01',
+    tag: 'Step 01 · Your Real Brand',
+    headline: 'Start with your real website',
+    subtitle: 'PROTEUS starts with your real website so it knows what normal looks like.',
+    activeNodes: ['brandHQ'],
+    activeArcs: [],
+    routePackets: () => [],
+    camera: { position: [-11.8, 9.6, 10.6], target: [-5.2, 0.9, -1.2] },
+    labels: (b) => [
+      { nodeId: 'brandHQ', title: b.brand, detail: 'Official site · Protected', tone: 'blue' },
+    ],
+    traceCard: (b) => ({
+      tag: 'YOUR REAL BRAND',
+      provenance: 'VERIFIED',
+      title: b.brand,
+      rows: [
+        { k: 'Official server', v: b.baselineIp },
+        { k: 'Email safety', v: b.baselinePosture },
+        { k: 'Baseline saved', v: 'Normal setup recorded' },
+      ],
+      stats: [
+        { value: '17', label: 'Typo Checks', tone: 'amber' },
+        { value: '100%', label: 'Trusted Reference', tone: 'blue' },
+      ],
+    }),
+  },
+  {
+    id: 'step-2',
+    index: '02',
+    tag: 'Step 02 · Fake Lookalikes',
+    headline: 'Spot typos and copycat names',
+    subtitle: 'It lists common typos and copycat names people might fall for.',
+    activeNodes: ['brandHQ', 'permRack', 'actorTerminal'],
+    activeArcs: ['arc-brand-rack', 'arc-rack-actor'],
+    routePackets: (b) => [
+      { arcId: 'arc-brand-rack', label: `${b.homoglyphSample} · High risk`, kind: 'flow' },
+      { arcId: 'arc-rack-actor', label: `${b.lookalikeDomain} · Priority`, kind: 'flow' },
+    ],
+    camera: { position: [-10.8, 10.5, 13.6], target: [-3.8, 0.9, 0.7] },
+    labels: (b) => [
+      { nodeId: 'permRack', title: 'Copycat List', detail: '17 typo styles', tone: 'amber' },
+      { nodeId: 'actorTerminal', title: b.lookalikeDomain, detail: 'Queued to check', tone: 'amber' },
+    ],
+    traceCard: (b) => ({
+      tag: 'FAKE LOOKALIKES',
+      provenance: '17 CHECKS',
+      title: 'Copycat Names Found',
+      rows: [
+        { k: b.homoglyphSample, v: 'Swapped letter · High', tone: 'amber' },
+        { k: b.lookalikeDomain, v: 'Extra word · High', tone: 'amber' },
+        { k: b.parkedSample, v: 'Number typo · Medium' },
+      ],
+      stats: [
+        { value: '17', label: 'Typo Styles', tone: 'amber' },
+        { value: '1,420+', label: 'Names Listed' },
+        { value: '14.2 hrs', label: 'Prep Saved', tone: 'blue' },
+      ],
+      note: 'Ranks the most convincing lookalikes first.',
+    }),
+  },
+  {
+    id: 'step-3',
+    index: '03',
+    tag: 'Step 03 · Dead vs. Active Check',
+    headline: 'Skip unused fake names',
+    subtitle: "It skips unused fake names so your team doesn't waste time.",
+    activeNodes: ['actorTerminal', 'inspectionGate', 'infraStack'],
+    activeArcs: ['arc-actor-gate-pass', 'arc-gate-infra', 'arc-actor-gate-drop'],
+    routePackets: (b) => [
+      {
+        arcId: 'arc-actor-gate-pass',
+        label: `${b.lookalikeDomain} → Safety Check`,
+        kind: 'flow',
+      },
+      {
+        arcId: 'arc-gate-infra',
+        label: `${b.lookalikeDomain} → Active Site`,
+        kind: 'handoff',
+      },
+      {
+        arcId: 'arc-actor-gate-drop',
+        label: `${b.parkedSample} · Unused`,
+        kind: 'drop',
+      },
+    ],
+    camera: { position: [-6.4, 10.6, 14.0], target: [0.6, 0.9, 0.2] },
+    labels: (b) => [
+      { nodeId: 'inspectionGate', title: b.lookalikeDomain, detail: 'Active site · Checked', tone: 'amber' },
+    ],
+    traceCard: (b) => ({
+      tag: 'DEAD VS. ACTIVE',
+      provenance: 'AUTO FILTER',
+      title: 'Skip Unused Names',
+      rows: [
+        { k: b.parkedSample, v: 'Unused · Skipped', tone: 'rust' },
+        { k: b.lookalikeDomain, v: 'Active · Checked next', tone: 'amber' },
+      ],
+      bar: { label: 'Unused Noise Skipped', valueText: '88%', percent: 88, tone: 'amber' },
+      stats: [
+        { value: '88%', label: 'Noise Skipped', tone: 'amber' },
+        { value: '86.4 hrs', label: 'Time Saved', tone: 'blue' },
+        { value: '12%', label: 'Active Sites' },
+      ],
+    }),
+  },
+  {
+    id: 'step-4',
+    index: '04',
+    tag: 'Step 04 · Safety & Setup Check',
+    headline: 'Check if the fake site looks real',
+    subtitle: 'It checks if the site is set up to look trustworthy or send fake emails.',
+    activeNodes: ['inspectionGate', 'infraStack', 'relayTower'],
+    activeArcs: ['arc-gate-infra', 'arc-infra-relay'],
+    routePackets: (b) => [
+      { arcId: 'arc-gate-infra', label: `${b.lookalikeDomain} → Setup Check`, kind: 'flow' },
+      { arcId: 'arc-infra-relay', label: `${b.activeIp} → Host Location`, kind: 'flow' },
+    ],
+    camera: { position: [-3.2, 10.6, 12.6], target: [3.6, 0.95, -1.2] },
+    labels: (b) => [
+      { nodeId: 'infraStack', title: b.lookalikeDomain, detail: `${b.dmarcStatus} · ${b.tlsAge}`, tone: 'amber' },
+      { nodeId: 'relayTower', title: b.activeIp, detail: b.asnGeo, tone: 'blue' },
+    ],
+    traceCard: (b) => ({
+      tag: 'SAFETY & SETUP',
+      provenance: 'ACTIVE SITE',
+      title: b.lookalikeDomain,
+      rows: [
+        { k: 'Server IP', v: b.activeIp },
+        { k: 'Email safety', v: b.dmarcStatus, tone: 'rust' },
+        { k: 'Security padlock', v: b.tlsAge, tone: 'amber' },
+        { k: 'Server location', v: b.asnGeo },
+      ],
+      stats: [
+        { value: '3 / 4', label: 'Red Flags', tone: 'amber' },
+        { value: b.exposureLow, label: 'Est. Fraud Risk', tone: 'rust' },
+      ],
+    }),
+  },
+  {
+    id: 'step-5',
+    index: '05',
+    tag: 'Step 05 · Early Warning',
+    headline: 'Catch warning signs early',
+    subtitle: 'It flags suspicious copycat sites early before customers get tricked.',
+    activeNodes: ['inspectionGate', 'infraStack', 'twinVaults'],
+    activeArcs: ['arc-gate-infra', 'arc-infra-vault-drift'],
+    routePackets: (b) => [
+      { arcId: 'arc-gate-infra', label: `${b.lookalikeDomain} → Risk Check`, kind: 'flow' },
+      { arcId: 'arc-infra-vault-drift', label: 'Early Warning · High', kind: 'handoff' },
+    ],
+    camera: { position: [-2.8, 10.6, 13.2], target: [4.2, 0.95, -0.1] },
+    labels: (b) => [
+      { nodeId: 'twinVaults', title: 'Early Warning', detail: 'Not confirmed phishing yet', tone: 'rust' },
+    ],
+    traceCard: (b) => ({
+      tag: 'EARLY WARNING',
+      provenance: 'NOT CONFIRMED',
+      title: b.lookalikeDomain,
+      rows: [],
+      signals: b.signals,
+      bar: {
+        label: 'Risk level: High',
+        valueText: `${b.preCrimeScore} / 100`,
+        percent: b.preCrimeScore,
+        tone: 'rust',
+      },
+      stats: [
+        { value: '4–6 days', label: 'Head Start', tone: 'blue' },
+        { value: b.exposureHigh, label: 'Est. Fraud Risk', tone: 'rust' },
+      ],
+      note: 'Early warning only—not confirmed phishing yet.',
+    }),
+  },
+  {
+    id: 'step-6',
+    index: '06',
+    tag: 'Step 06 · Sudden Changes',
+    headline: 'Spot when a quiet fake wakes up',
+    subtitle: 'It watches for sudden updates that mean a quiet fake site is waking up.',
+    activeNodes: ['infraStack', 'relayTower', 'twinVaults'],
+    activeArcs: ['arc-infra-vault-base', 'arc-infra-vault-drift'],
+    routePackets: (b) => [
+      { arcId: 'arc-infra-vault-base', label: 'First scan · Quiet', kind: 'flow' },
+      { arcId: 'arc-infra-vault-drift', label: 'New scan · Changed', kind: 'flow' },
+    ],
+    camera: { position: [-0.8, 10.4, 12.8], target: [5.8, 0.95, -0.5] },
+    labels: (b) => [
+      { nodeId: 'twinVaults', title: b.lookalikeDomain, detail: 'Quiet → Live login', tone: 'rust' },
+    ],
+    traceCard: (b) => ({
+      tag: 'SUDDEN CHANGES',
+      provenance: 'WATCHING 24/7',
+      title: b.lookalikeDomain,
+      rows: [
+        { k: 'Before', v: b.driftBefore },
+        { k: 'Now', v: b.driftAfter, tone: 'rust' },
+      ],
+      bar: { label: 'Activity Change', valueText: 'Quiet → Active', percent: 92, tone: 'rust' },
+      stats: [
+        { value: '< 1 hr', label: 'Alert Speed', tone: 'blue' },
+        { value: b.exposureHigh, label: 'Est. Fraud Risk', tone: 'rust' },
+      ],
+    }),
+  },
+  {
+    id: 'step-7',
+    index: '07',
+    tag: 'Step 07 · Take Action',
+    headline: 'Package proof to take it down fast',
+    subtitle: 'It gathers the proof so your team can get fake sites taken down fast.',
+    activeNodes: ['twinVaults', 'responseConsole'],
+    activeArcs: ['arc-vault-response'],
+    routePackets: (b) => [
+      { arcId: 'arc-vault-response', label: `${b.activeIp} → ${b.takedownTarget}`, kind: 'flow' },
+    ],
+    camera: { position: [-0.8, 10.6, 14.0], target: [6.0, 0.9, 1.6] },
+    labels: (b) => [
+      { nodeId: 'responseConsole', title: 'Action Hub', detail: 'Takedown & Team Alert', tone: 'amber' },
+    ],
+    traceCard: (b) => ({
+      tag: 'TAKE ACTION',
+      provenance: 'READY TO SEND',
+      title: b.lookalikeDomain,
+      rows: b.osintRows,
+      stats: [
+        { value: '4 / 4', label: 'Proof Ready', tone: 'blue' },
+        { value: '6.5 hrs', label: 'Prep Saved', tone: 'amber' },
+        { value: b.exposureHigh, label: 'Risk Avoided', tone: 'rust' },
+      ],
+    }),
+  },
+];

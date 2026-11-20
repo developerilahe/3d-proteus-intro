@@ -1,0 +1,314 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { createProteusScene3D } from './proteus/scene3d.js';
+import type { ProjectedCoord, ProteusScene3DHandle } from './proteus/scene3d.d.ts';
+import { BRAND_PROFILES, WALKTHROUGH_STEPS } from './proteus/scenario-data.js';
+import type { BrandProfileKey } from './proteus/scenario-data.d.ts';
+
+const BRAND_KEYS: BrandProfileKey[] = ['pashabank.az', 'acmecorp.com'];
+
+export default function App() {
+  const mountRef = useRef<HTMLDivElement | null>(null);
+  const engineRef = useRef<ProteusScene3DHandle | null>(null);
+  const nodeRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const packetRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const latestCoordsRef = useRef<{
+    nodeCoords: Record<string, ProjectedCoord>;
+    packetCoords: Record<string, ProjectedCoord>;
+  }>({ nodeCoords: {}, packetCoords: {} });
+
+  const [brandKey, setBrandKey] = useState<BrandProfileKey>('pashabank.az');
+  const [stepIndex, setStepIndex] = useState<number>(0);
+  const [autoplay, setAutoplay] = useState<boolean>(false);
+
+  const brand = BRAND_PROFILES[brandKey];
+  const step = WALKTHROUGH_STEPS[stepIndex];
+  const activeLabels = step.labels(brand);
+  const routePackets = step.routePackets(brand);
+  const traceCard = step.traceCard(brand);
+
+  const syncProjectedPositions = useCallback(() => {
+    const { nodeCoords, packetCoords } = latestCoordsRef.current;
+
+    Object.entries(nodeRefs.current).forEach(([nodeId, el]) => {
+      if (!el) return;
+      const pos = nodeCoords[nodeId];
+      if (pos && pos.visible) {
+        el.style.display = 'block';
+        el.style.left = `${pos.x}px`;
+        el.style.top = `${pos.y}px`;
+      } else {
+        el.style.display = 'none';
+      }
+    });
+
+    Object.entries(packetRefs.current).forEach(([arcId, el]) => {
+      if (!el) return;
+      const pos = packetCoords[arcId];
+      if (pos && pos.visible) {
+        el.style.display = 'inline-flex';
+        el.style.left = `${pos.x}px`;
+        el.style.top = `${pos.y}px`;
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = mountRef.current;
+    if (!el) return;
+
+    const engine = createProteusScene3D(el, {
+      initialStep: 0,
+      onSelectNode: (nodeId) => {
+        setAutoplay(false);
+        const matchIdx = WALKTHROUGH_STEPS.findIndex((s) => s.activeNodes.includes(nodeId));
+        if (matchIdx !== -1) {
+          setStepIndex(matchIdx);
+          engine.setStep(matchIdx, true);
+        }
+      },
+      onFrameProject: (nodeCoords, packetCoords) => {
+        latestCoordsRef.current = { nodeCoords, packetCoords };
+        syncProjectedPositions();
+      },
+    });
+    engineRef.current = engine;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        setAutoplay(false);
+        setStepIndex((prev) => {
+          const next = Math.min(WALKTHROUGH_STEPS.length - 1, prev + 1);
+          engine.setStep(next, true);
+          return next;
+        });
+      } else if (e.key === 'ArrowLeft') {
+        setAutoplay(false);
+        setStepIndex((prev) => {
+          const next = Math.max(0, prev - 1);
+          engine.setStep(next, true);
+          return next;
+        });
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      engine.dispose();
+      engineRef.current = null;
+    };
+  }, [syncProjectedPositions]);
+
+  useEffect(() => {
+    syncProjectedPositions();
+  }, [stepIndex, brandKey, syncProjectedPositions]);
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const timer = window.setInterval(() => {
+      setStepIndex((prev) => {
+        const next = (prev + 1) % WALKTHROUGH_STEPS.length;
+        engineRef.current?.setStep(next, true);
+        return next;
+      });
+    }, 6500);
+    return () => window.clearInterval(timer);
+  }, [autoplay]);
+
+  const goToStep = (idx: number) => {
+    setAutoplay(false);
+    const bounded = Math.max(0, Math.min(WALKTHROUGH_STEPS.length - 1, idx));
+    setStepIndex(bounded);
+    engineRef.current?.setStep(bounded, true);
+  };
+
+  return (
+    <main id="proteus-briefing" aria-label="PROTEUS — How It Works">
+      {/* 100% Full-Bleed 3D Canvas */}
+      <div ref={mountRef} className="pb-canvas" />
+
+      {/* Top-Center Step Header Box */}
+      <header className="pb-header-box">
+        <div className="pb-header-tag">{step.tag}</div>
+        <h1 className="pb-header-title">{step.headline}</h1>
+        <p className="pb-header-sub">{step.subtitle}</p>
+      </header>
+
+      {/* Minimal Short Node Tags on Active Structures */}
+      {activeLabels.map((lbl) => (
+        <div
+          key={lbl.nodeId}
+          ref={(el) => {
+            nodeRefs.current[lbl.nodeId] = el;
+          }}
+          className={`pb-node-pill ${lbl.tone ? `is-${lbl.tone}` : ''}`}
+          style={{ display: 'none' }}
+        >
+          <div className="pb-node-pill-title">{lbl.title}</div>
+          <div className="pb-node-pill-detail">{lbl.detail}</div>
+        </div>
+      ))}
+
+      {/* Forward-Only URL Route Tags Gliding Along Active Arcs */}
+      {routePackets.map((pkt) => (
+        <div
+          key={pkt.arcId}
+          ref={(el) => {
+            packetRefs.current[pkt.arcId] = el;
+          }}
+          className={`pb-packet-pill ${pkt.kind === 'drop' ? 'is-drop' : ''}`}
+          style={{ display: 'none' }}
+        >
+          <span className="pb-packet-mark" aria-hidden="true" />
+          <span>{pkt.label}</span>
+        </div>
+      ))}
+
+      {/* One Compact Right-Hand Telemetry & Impact Card */}
+      <aside className="pb-telemetry-card" aria-label={traceCard.tag}>
+        <div className="pb-tel-head">
+          <div className="pb-tel-tag">{traceCard.tag}</div>
+          <span className="pb-provenance">{traceCard.provenance}</span>
+        </div>
+        <h2 className="pb-tel-title">{traceCard.title}</h2>
+
+        {traceCard.rows.length > 0 && (
+          <div className="pb-tel-rows">
+            {traceCard.rows.map((r, i) => (
+              <div key={i} className="pb-tel-row">
+                <span className="pb-tel-k">{r.k}</span>
+                <span className={`pb-tel-v ${r.tone ? `is-${r.tone}` : ''}`}>{r.v}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {traceCard.signals && (
+          <div className="pb-tel-rows">
+            {traceCard.signals.map((sig, i) => (
+              <div key={i} className="pb-tel-row">
+                <span className="pb-tel-k">{sig.label}</span>
+                <span className={`pb-tel-v ${sig.tone ? `is-${sig.tone}` : ''}`}>
+                  {sig.weight}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {traceCard.bar && (
+          <div className="pb-score-wrap">
+            <div className="pb-score-head">
+              <span className="pb-tel-k">{traceCard.bar.label}</span>
+              <span
+                className={`pb-score-val ${
+                  traceCard.bar.tone === 'rust' ? 'is-rust' : ''
+                }`}
+              >
+                {traceCard.bar.valueText}
+              </span>
+            </div>
+            <div className="pb-score-track">
+              <div
+                className={`pb-score-fill ${
+                  traceCard.bar.tone ? `is-${traceCard.bar.tone}` : ''
+                }`}
+                style={{ width: `${Math.min(100, traceCard.bar.percent)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div
+          className={`pb-stat-grid ${
+            traceCard.stats.length === 2 ? 'cols-2' : 'cols-3'
+          }`}
+        >
+          {traceCard.stats.map((st, idx) => (
+            <div key={idx} className="pb-stat-box">
+              <div className={`pb-stat-val ${st.tone ? `is-${st.tone}` : ''}`}>
+                {st.value}
+              </div>
+              <div className="pb-stat-lbl">{st.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {traceCard.note && <p className="pb-tel-note">{traceCard.note}</p>}
+      </aside>
+
+      {/* Bottom Pill Control Bar */}
+      <nav className="pb-bottom-bar" aria-label="Walkthrough controls">
+        <button
+          type="button"
+          className="pb-ctrl-btn"
+          disabled={stepIndex === 0}
+          onClick={() => goToStep(stepIndex - 1)}
+          aria-label="Previous step"
+        >
+          <ChevronLeft size={14} aria-hidden="true" />
+        </button>
+
+        <div className="pb-dashes" role="group" aria-label="Step progress">
+          {WALKTHROUGH_STEPS.map((s, idx) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => goToStep(idx)}
+              className={`pb-dash ${stepIndex === idx ? 'is-active' : ''}`}
+              aria-label={`Step ${idx + 1}: ${s.tag}`}
+            />
+          ))}
+        </div>
+
+        <span className="pb-step-counter">
+          {stepIndex + 1} / {WALKTHROUGH_STEPS.length}
+        </span>
+
+        <span className="pb-sep" aria-hidden="true" />
+
+        <button
+          type="button"
+          onClick={() => setAutoplay((v) => !v)}
+          className={`pb-ctrl-btn ${autoplay ? 'is-active' : ''}`}
+        >
+          {autoplay ? <Pause size={12} aria-hidden="true" /> : <Play size={12} aria-hidden="true" />}
+          <span>{autoplay ? 'Pause' : 'Autoplay'}</span>
+        </button>
+
+        <button
+          type="button"
+          disabled={stepIndex === WALKTHROUGH_STEPS.length - 1}
+          onClick={() => goToStep(stepIndex + 1)}
+          className="pb-ctrl-btn is-primary"
+        >
+          <span>Next</span>
+          <ChevronRight size={14} aria-hidden="true" />
+        </button>
+
+        <span className="pb-sep" aria-hidden="true" />
+
+        <div className="pb-brand-switch" role="group" aria-label="Target brand">
+          {BRAND_KEYS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setBrandKey(key)}
+              className={`pb-brand-btn ${brandKey === key ? 'is-active' : ''}`}
+            >
+              {key}
+            </button>
+          ))}
+        </div>
+      </nav>
+    </main>
+  );
+}
