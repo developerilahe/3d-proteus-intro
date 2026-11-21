@@ -1,5 +1,7 @@
 @import "tailwindcss";
+@import "./proteus/editorial.css";
 @import "./proteus/styles.css";
+@import "./proteus/workbench.css";
 
 html,
 body,
@@ -7,7 +9,12 @@ body,
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  background-color: #07080a;
-  color: #f3f5f8;
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #0d0d0d;
+  color: #b6b6b6;
+  font-family: 'Poppins', system-ui, sans-serif;
+  scroll-behavior: smooth;
 }

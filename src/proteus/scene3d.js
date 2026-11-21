@@ -16,7 +16,7 @@ const _colorA = new THREE.Color();
 const _up = new THREE.Vector3(0, 1, 0);
 
 const PALETTE = {
-  voidBg: 0x07080a,
+  voidBg: 0x0d0d0d,
   slabSurface: 0x13161c,
   slabBevel: 0x191d25,
   slateBody: 0x20252e,
@@ -221,7 +221,7 @@ export function createProteusScene3D(mountEl, options = {}) {
   const keyLight = new THREE.DirectionalLight(0xfff4e2, 1.45);
   keyLight.position.set(10, 18, 12);
   keyLight.castShadow = !isSoftwareGl;
-  keyLight.shadow.mapSize.set(2048, 2048);
+  keyLight.shadow.mapSize.set(1024, 1024);
   keyLight.shadow.camera.near = 2;
   keyLight.shadow.camera.far = 52;
   const d = 17;
@@ -239,7 +239,8 @@ export function createProteusScene3D(mountEl, options = {}) {
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = !isSoftwareGl;
-  controls.dampingFactor = 0.06;
+  controls.dampingFactor = 0.08;
+  controls.enableZoom = false;
   controls.minDistance = 7;
   controls.maxDistance = 34;
   controls.minPolarAngle = 0.25;
@@ -915,6 +916,20 @@ export function createProteusScene3D(mountEl, options = {}) {
     requestRender();
   }
 
+  function playScrollEntrance() {
+    currentStepIndex = 0;
+    stepElapsed = 0;
+    const s = WALKTHROUGH_STEPS[0];
+    camera.position.set(s.camera.position[0] - 4.5, s.camera.position[1] + 5.5, s.camera.position[2] + 6.5);
+    controls.target.set(0, 0, 0);
+    controls.update();
+    targetCamPos.set(...s.camera.position);
+    targetLookAt.set(...s.camera.target);
+    camTransition = true;
+    clock.getDelta();
+    requestRender();
+  }
+
   const raycaster = new THREE.Raycaster();
   raycaster.layers.set(1);
   const pointer = new THREE.Vector2();
@@ -956,15 +971,15 @@ export function createProteusScene3D(mountEl, options = {}) {
       const poll = () => {
         if (disposed) return;
         const status = gl.getSyncParameter(sync, gl.SYNC_STATUS);
-        if (status === gl.UNSIGNALED) frameId = window.setTimeout(poll, 5);
+        if (status === gl.UNSIGNALED) frameId = window.setTimeout(poll, 4);
         else {
           gl.deleteSync(sync);
-          frameId = window.setTimeout(cb, 80);
+          frameId = window.setTimeout(cb, 16);
         }
       };
-      frameId = window.setTimeout(poll, 5);
+      frameId = window.setTimeout(poll, 4);
     } else {
-      frameId = window.setTimeout(cb, 80);
+      frameId = window.setTimeout(cb, 20);
     }
   }
 
@@ -1179,7 +1194,7 @@ export function createProteusScene3D(mountEl, options = {}) {
   function tick() {
     loopQueued = false;
     if (disposed) return;
-    const delta = Math.min(0.08, clock.getDelta());
+    const delta = Math.min(0.033, clock.getDelta());
     stepScene(delta);
     if (isVisible) {
       renderer.render(scene, camera);
@@ -1237,6 +1252,7 @@ export function createProteusScene3D(mountEl, options = {}) {
 
   return {
     setStep,
+    playScrollEntrance,
     dispose() {
       disposed = true;
       cancelAnimationFrame(frameId);

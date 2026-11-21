@@ -1,0 +1,387 @@
+domain,ascii_form,registrable,family,rule,tier,score,a_record,mx,spf,dmarc,age_days,registrar,reasons
+acmecorp.login-portal.xyz,acmecorp.login-portal.xyz,login-portal.xyz,tld,subdomain_abuse,CRITICAL,80,1,1,0,0,3,cheapregistrar,brand_in_subdomain_only:20 | lure_present:15 | lure_extra_portal:3 | hyphenated_lure:2 | a_record:10 | mx_present:10 | spf_absent:4 | dmarc_absent:4 | fresh_domain:8 | risky_tld:4
+acmecorp.secure-auth.click,acmecorp.secure-auth.click,secure-auth.click,tld,subdomain_abuse,HIGH,70,1,0,0,0,15,cheapregistrar,brand_in_subdomain_only:20 | lure_present:15 | lure_extra_auth:3 | hyphenated_lure:2 | a_record:10 | spf_absent:4 | dmarc_absent:4 | fresh_domain:8 | risky_tld:4
+acmecorp.zip,acmecorp.zip,acmecorp.zip,tld,risky_tld,HIGH,60,1,1,0,0,20,bulk-reg,tld_swap_same_label:20 | a_record:10 | mx_present:10 | spf_absent:4 | dmarc_absent:4 | fresh_domain:8 | risky_tld:4
+аcmecorp.com,xn--cmecorp-1fg.com,аcmecorp.com,homoglyph,homoglyph_sub,HIGH,56,1,0,0,0,45,privacy-protect,homoglyph_clone:25 | mixed_script:5 | punycode_label:3 | a_record:10 | spf_absent:4 | dmarc_absent:4 | recent_domain:5
+acmecorp.verify-billing.top,acmecorp.verify-billing.top,verify-billing.top,tld,subdomain_abuse,WATCH,44,0,0,0,0,,,brand_in_subdomain_only:20 | lure_present:15 | lure_extra_billing:3 | hyphenated_lure:2 | risky_tld:4
+account-acmecorp.com,account-acmecorp.com,account-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-account.com,acmecorp-account.com,acmecorp-account.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-alert.com,acmecorp-alert.com,acmecorp-alert.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-auth.com,acmecorp-auth.com,acmecorp-auth.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-billing.com,acmecorp-billing.com,acmecorp-billing.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-confirm.com,acmecorp-confirm.com,acmecorp-confirm.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-helpdesk.com,acmecorp-helpdesk.com,acmecorp-helpdesk.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-invoice.com,acmecorp-invoice.com,acmecorp-invoice.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-login.com,acmecorp-login.com,acmecorp-login.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-mail.com,acmecorp-mail.com,acmecorp-mail.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-notice.com,acmecorp-notice.com,acmecorp-notice.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-payment.com,acmecorp-payment.com,acmecorp-payment.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-portal.com,acmecorp-portal.com,acmecorp-portal.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-recovery.com,acmecorp-recovery.com,acmecorp-recovery.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-secure.com,acmecorp-secure.com,acmecorp-secure.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-signin.com,acmecorp-signin.com,acmecorp-signin.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-support.com,acmecorp-support.com,acmecorp-support.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-unlock.com,acmecorp-unlock.com,acmecorp-unlock.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-update.com,acmecorp-update.com,acmecorp-update.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-verify.com,acmecorp-verify.com,acmecorp-verify.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+acmecorp-wallet.com,acmecorp-wallet.com,acmecorp-wallet.com,combosquat,brand_lure,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+alert-acmecorp.com,alert-acmecorp.com,alert-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+auth-acmecorp.com,auth-acmecorp.com,auth-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+billing-acmecorp.com,billing-acmecorp.com,billing-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+confirm-acmecorp.com,confirm-acmecorp.com,confirm-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+helpdesk-acmecorp.com,helpdesk-acmecorp.com,helpdesk-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+invoice-acmecorp.com,invoice-acmecorp.com,invoice-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+login-acmecorp.com,login-acmecorp.com,login-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+mail-acmecorp.com,mail-acmecorp.com,mail-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+notice-acmecorp.com,notice-acmecorp.com,notice-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+payment-acmecorp.com,payment-acmecorp.com,payment-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+portal-acmecorp.com,portal-acmecorp.com,portal-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+recovery-acmecorp.com,recovery-acmecorp.com,recovery-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+secure-acmecorp.com,secure-acmecorp.com,secure-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+signin-acmecorp.com,signin-acmecorp.com,signin-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+support-acmecorp.com,support-acmecorp.com,support-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+unlock-acmecorp.com,unlock-acmecorp.com,unlock-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+update-acmecorp.com,update-acmecorp.com,update-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+verify-acmecorp.com,verify-acmecorp.com,verify-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+wallet-acmecorp.com,wallet-acmecorp.com,wallet-acmecorp.com,combosquat,lure_brand,WATCH,37,0,0,0,0,,,brand_in_registrable:20 | lure_present:15 | hyphenated_lure:2
+accountacmecorp.com,accountacmecorp.com,accountacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpaccount.com,acmecorpaccount.com,acmecorpaccount.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpalert.com,acmecorpalert.com,acmecorpalert.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpauth.com,acmecorpauth.com,acmecorpauth.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpbilling.com,acmecorpbilling.com,acmecorpbilling.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpconfirm.com,acmecorpconfirm.com,acmecorpconfirm.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorphelpdesk.com,acmecorphelpdesk.com,acmecorphelpdesk.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpinvoice.com,acmecorpinvoice.com,acmecorpinvoice.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorplogin.com,acmecorplogin.com,acmecorplogin.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpmail.com,acmecorpmail.com,acmecorpmail.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpnotice.com,acmecorpnotice.com,acmecorpnotice.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorppayment.com,acmecorppayment.com,acmecorppayment.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpportal.com,acmecorpportal.com,acmecorpportal.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorprecovery.com,acmecorprecovery.com,acmecorprecovery.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpsecure.com,acmecorpsecure.com,acmecorpsecure.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpsignin.com,acmecorpsignin.com,acmecorpsignin.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpsupport.com,acmecorpsupport.com,acmecorpsupport.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpunlock.com,acmecorpunlock.com,acmecorpunlock.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpupdate.com,acmecorpupdate.com,acmecorpupdate.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpverify.com,acmecorpverify.com,acmecorpverify.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorpwallet.com,acmecorpwallet.com,acmecorpwallet.com,combosquat,brandlure,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+alertacmecorp.com,alertacmecorp.com,alertacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+authacmecorp.com,authacmecorp.com,authacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+billingacmecorp.com,billingacmecorp.com,billingacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+confirmacmecorp.com,confirmacmecorp.com,confirmacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+helpdeskacmecorp.com,helpdeskacmecorp.com,helpdeskacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+invoiceacmecorp.com,invoiceacmecorp.com,invoiceacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+loginacmecorp.com,loginacmecorp.com,loginacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+mailacmecorp.com,mailacmecorp.com,mailacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+noticeacmecorp.com,noticeacmecorp.com,noticeacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+paymentacmecorp.com,paymentacmecorp.com,paymentacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+portalacmecorp.com,portalacmecorp.com,portalacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+recoveryacmecorp.com,recoveryacmecorp.com,recoveryacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+secureacmecorp.com,secureacmecorp.com,secureacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+signinacmecorp.com,signinacmecorp.com,signinacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+supportacmecorp.com,supportacmecorp.com,supportacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+unlockacmecorp.com,unlockacmecorp.com,unlockacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+updateacmecorp.com,updateacmecorp.com,updateacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+verifyacmecorp.com,verifyacmecorp.com,verifyacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+walletacmecorp.com,walletacmecorp.com,walletacmecorp.com,combosquat,lurebrand,WATCH,35,0,0,0,0,,,brand_in_registrable:20 | lure_present:15
+acmecorp.co,acmecorp.co,acmecorp.co,tld,typo_tld,LOW,34,1,0,1,1,2000,colo,tld_swap_same_label:20 | a_record:10 | risky_tld:4
+acmecorρ.com,xn--acmecor-vpf.com,acmecorρ.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmecorр.com,xn--acmecor-wjg.com,acmecorр.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmecοrp.com,xn--acmecrp-dpf.com,acmecοrp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmecоrp.com,xn--acmecrp-ejg.com,acmecоrp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmeсorp.com,xn--acmeorp-1jg.com,acmeсorp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmεcorp.com,xn--acmcorp-0mf.com,acmεcorp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmеcorp.com,xn--acmcorp-9gg.com,acmеcorp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acмecorp.com,xn--acecorp-uig.com,acмecorp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+aсmecorp.com,xn--amecorp-yjg.com,aсmecorp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+αcmecorp.com,xn--cmecorp-0lf.com,αcmecorp.com,homoglyph,homoglyph_sub,LOW,33,0,0,0,0,,,homoglyph_clone:25 | mixed_script:5 | punycode_label:3
+acmeϲorp.com,xn--acmeorp-z0f.com,acmeϲorp.com,homoglyph,homoglyph_sub,LOW,28,0,0,0,0,,,typosquat_distance_1:20 | mixed_script:5 | punycode_label:3
+acmécorp.com,xn--acmcorp-dya.com,acmécorp.com,homoglyph,homoglyph_sub,LOW,28,0,0,0,0,,,homoglyph_clone:25 | punycode_label:3
+aϲmecorp.com,xn--amecorp-w0f.com,aϲmecorp.com,homoglyph,homoglyph_sub,LOW,28,0,0,0,0,,,typosquat_distance_1:20 | mixed_script:5 | punycode_label:3
+àcmecorp.com,xn--cmecorp-7va.com,àcmecorp.com,homoglyph,homoglyph_sub,LOW,28,0,0,0,0,,,homoglyph_clone:25 | punycode_label:3
+acmec0rp.com,acmec0rp.com,acmec0rp.com,homoglyph,homoglyph_sub,LOW,25,0,0,0,0,,,homoglyph_clone:25
+acrnecorp.com,acrnecorp.com,acrnecorp.com,homoglyph,homoglyph_sub,LOW,25,0,0,0,0,,,homoglyph_clone:25
+acmecorp.buzz,acmecorp.buzz,acmecorp.buzz,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.cam,acmecorp.cam,acmecorp.cam,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.cfd,acmecorp.cfd,acmecorp.cfd,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.click,acmecorp.click,acmecorp.click,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.cm,acmecorp.cm,acmecorp.cm,tld,typo_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.comm,acmecorp.comm,acmecorp.comm,tld,typo_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.con,acmecorp.con,acmecorp.con,tld,typo_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.cyou,acmecorp.cyou,acmecorp.cyou,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.icu,acmecorp.icu,acmecorp.icu,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.info,acmecorp.info,acmecorp.info,tld,typo_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.live,acmecorp.live,acmecorp.live,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.lol,acmecorp.lol,acmecorp.lol,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.monster,acmecorp.monster,acmecorp.monster,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.mov,acmecorp.mov,acmecorp.mov,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.om,acmecorp.om,acmecorp.om,tld,typo_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.org,acmecorp.org,acmecorp.org,tld,typo_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.rest,acmecorp.rest,acmecorp.rest,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.sbs,acmecorp.sbs,acmecorp.sbs,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.shop,acmecorp.shop,acmecorp.shop,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.top,acmecorp.top,acmecorp.top,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+acmecorp.xyz,acmecorp.xyz,acmecorp.xyz,tld,risky_tld,LOW,24,0,0,0,0,,,tld_swap_same_label:20 | risky_tld:4
+aacmecorp.com,aacmecorp.com,aacmecorp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+abcmecorp.com,abcmecorp.com,abcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acamecorp.com,acamecorp.com,acamecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acbmecorp.com,acbmecorp.com,acbmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+accmecorp.com,accmecorp.com,accmecorp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acdmecorp.com,acdmecorp.com,acdmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acecorp.com,acecorp.com,acecorp.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acemcorp.com,acemcorp.com,acemcorp.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acemecorp.com,acemecorp.com,acemecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acfmecorp.com,acfmecorp.com,acfmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acgmecorp.com,acgmecorp.com,acgmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+achmecorp.com,achmecorp.com,achmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acimecorp.com,acimecorp.com,acimecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acjecorp.com,acjecorp.com,acjecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acjmecorp.com,acjmecorp.com,acjmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+ackmecorp.com,ackmecorp.com,ackmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aclmecorp.com,aclmecorp.com,aclmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmaecorp.com,acmaecorp.com,acmaecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmbecorp.com,acmbecorp.com,acmbecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmcecorp.com,acmcecorp.com,acmcecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmceorp.com,acmceorp.com,acmceorp.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmcorp.com,acmcorp.com,acmcorp.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmdcorp.com,acmdcorp.com,acmdcorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmdecorp.com,acmdecorp.com,acmdecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeacorp.com,acmeacorp.com,acmeacorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmebcorp.com,acmebcorp.com,acmebcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecaorp.com,acmecaorp.com,acmecaorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecborp.com,acmecborp.com,acmecborp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeccorp.com,acmeccorp.com,acmeccorp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecdorp.com,acmecdorp.com,acmecdorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeceorp.com,acmeceorp.com,acmeceorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecforp.com,acmecforp.com,acmecforp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecgorp.com,acmecgorp.com,acmecgorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmechorp.com,acmechorp.com,acmechorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeciorp.com,acmeciorp.com,acmeciorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecirp.com,acmecirp.com,acmecirp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecjorp.com,acmecjorp.com,acmecjorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeckorp.com,acmeckorp.com,acmeckorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeclorp.com,acmeclorp.com,acmeclorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeclrp.com,acmeclrp.com,acmeclrp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecmorp.com,acmecmorp.com,acmecmorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecnorp.com,acmecnorp.com,acmecnorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoarp.com,acmecoarp.com,acmecoarp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecobrp.com,acmecobrp.com,acmecobrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecocrp.com,acmecocrp.com,acmecocrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecodrp.com,acmecodrp.com,acmecodrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoep.com,acmecoep.com,acmecoep.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoerp.com,acmecoerp.com,acmecoerp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecofp.com,acmecofp.com,acmecofp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecofrp.com,acmecofrp.com,acmecofrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecogrp.com,acmecogrp.com,acmecogrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecohrp.com,acmecohrp.com,acmecohrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoirp.com,acmecoirp.com,acmecoirp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecojrp.com,acmecojrp.com,acmecojrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecokrp.com,acmecokrp.com,acmecokrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecolrp.com,acmecolrp.com,acmecolrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecomrp.com,acmecomrp.com,acmecomrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeconrp.com,acmeconrp.com,acmeconrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoorp.com,acmecoorp.com,acmecoorp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecop.com,acmecop.com,acmecop.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecopr.com,acmecopr.com,acmecopr.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoprp.com,acmecoprp.com,acmecoprp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoqrp.com,acmecoqrp.com,acmecoqrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecor.com,acmecor.com,acmecor.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorap.com,acmecorap.com,acmecorap.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorbp.com,acmecorbp.com,acmecorbp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorcp.com,acmecorcp.com,acmecorcp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecordp.com,acmecordp.com,acmecordp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorep.com,acmecorep.com,acmecorep.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorfp.com,acmecorfp.com,acmecorfp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorgp.com,acmecorgp.com,acmecorgp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorhp.com,acmecorhp.com,acmecorhp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorip.com,acmecorip.com,acmecorip.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorjp.com,acmecorjp.com,acmecorjp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorkp.com,acmecorkp.com,acmecorkp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorlp.com,acmecorlp.com,acmecorlp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecormp.com,acmecormp.com,acmecormp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecornp.com,acmecornp.com,acmecornp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoro.com,acmecoro.com,acmecoro.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorop.com,acmecorop.com,acmecorop.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpa.com,acmecorpa.com,acmecorpa.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpb.com,acmecorpb.com,acmecorpb.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpc.com,acmecorpc.com,acmecorpc.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpcom.com,acmecorpcom.com,acmecorpcom.com,tld,dot_omission,LOW,20,0,0,0,0,,,brand_in_registrable:20
+acmecorpd.com,acmecorpd.com,acmecorpd.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpe.com,acmecorpe.com,acmecorpe.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpf.com,acmecorpf.com,acmecorpf.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpg.com,acmecorpg.com,acmecorpg.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorph.com,acmecorph.com,acmecorph.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpi.com,acmecorpi.com,acmecorpi.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpj.com,acmecorpj.com,acmecorpj.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpk.com,acmecorpk.com,acmecorpk.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpl.com,acmecorpl.com,acmecorpl.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpm.com,acmecorpm.com,acmecorpm.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpn.com,acmecorpn.com,acmecorpn.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpo.com,acmecorpo.com,acmecorpo.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpp.com,acmecorpp.com,acmecorpp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpq.com,acmecorpq.com,acmecorpq.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpr.com,acmecorpr.com,acmecorpr.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorps.com,acmecorps.com,acmecorps.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpt.com,acmecorpt.com,acmecorpt.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpu.com,acmecorpu.com,acmecorpu.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpv.com,acmecorpv.com,acmecorpv.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpw.com,acmecorpw.com,acmecorpw.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpx.com,acmecorpx.com,acmecorpx.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpy.com,acmecorpy.com,acmecorpy.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorpz.com,acmecorpz.com,acmecorpz.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorqp.com,acmecorqp.com,acmecorqp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorrp.com,acmecorrp.com,acmecorrp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorsp.com,acmecorsp.com,acmecorsp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecortp.com,acmecortp.com,acmecortp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorup.com,acmecorup.com,acmecorup.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorvp.com,acmecorvp.com,acmecorvp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorwp.com,acmecorwp.com,acmecorwp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorxp.com,acmecorxp.com,acmecorxp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoryp.com,acmecoryp.com,acmecoryp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecorzp.com,acmecorzp.com,acmecorzp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecosrp.com,acmecosrp.com,acmecosrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecotp.com,acmecotp.com,acmecotp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecotrp.com,acmecotrp.com,acmecotrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecourp.com,acmecourp.com,acmecourp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecovrp.com,acmecovrp.com,acmecovrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecowrp.com,acmecowrp.com,acmecowrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoxrp.com,acmecoxrp.com,acmecoxrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecoyrp.com,acmecoyrp.com,acmecoyrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecozrp.com,acmecozrp.com,acmecozrp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecporp.com,acmecporp.com,acmecporp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecprp.com,acmecprp.com,acmecprp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecqorp.com,acmecqorp.com,acmecqorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecrop.com,acmecrop.com,acmecrop.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecrorp.com,acmecrorp.com,acmecrorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecrp.com,acmecrp.com,acmecrp.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecsorp.com,acmecsorp.com,acmecsorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmectorp.com,acmectorp.com,acmectorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecuorp.com,acmecuorp.com,acmecuorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecvorp.com,acmecvorp.com,acmecvorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecworp.com,acmecworp.com,acmecworp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecxorp.com,acmecxorp.com,acmecxorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmecyorp.com,acmecyorp.com,acmecyorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeczorp.com,acmeczorp.com,acmeczorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmedcorp.com,acmedcorp.com,acmedcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmedorp.com,acmedorp.com,acmedorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeecorp.com,acmeecorp.com,acmeecorp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmefcorp.com,acmefcorp.com,acmefcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmegcorp.com,acmegcorp.com,acmegcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmehcorp.com,acmehcorp.com,acmehcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeicorp.com,acmeicorp.com,acmeicorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmejcorp.com,acmejcorp.com,acmejcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmekcorp.com,acmekcorp.com,acmekcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmelcorp.com,acmelcorp.com,acmelcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmemcorp.com,acmemcorp.com,acmemcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmencorp.com,acmencorp.com,acmencorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeocorp.com,acmeocorp.com,acmeocorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeocrp.com,acmeocrp.com,acmeocrp.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeorp.com,acmeorp.com,acmeorp.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmepcorp.com,acmepcorp.com,acmepcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeqcorp.com,acmeqcorp.com,acmeqcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmercorp.com,acmercorp.com,acmercorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmescorp.com,acmescorp.com,acmescorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmetcorp.com,acmetcorp.com,acmetcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeucorp.com,acmeucorp.com,acmeucorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmevcorp.com,acmevcorp.com,acmevcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmevorp.com,acmevorp.com,acmevorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmewcorp.com,acmewcorp.com,acmewcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmexcorp.com,acmexcorp.com,acmexcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmexorp.com,acmexorp.com,acmexorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmeycorp.com,acmeycorp.com,acmeycorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmezcorp.com,acmezcorp.com,acmezcorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmfecorp.com,acmfecorp.com,acmfecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmgecorp.com,acmgecorp.com,acmgecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmhecorp.com,acmhecorp.com,acmhecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmiecorp.com,acmiecorp.com,acmiecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmjecorp.com,acmjecorp.com,acmjecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmkecorp.com,acmkecorp.com,acmkecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmlecorp.com,acmlecorp.com,acmlecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmmecorp.com,acmmecorp.com,acmmecorp.com,typosquat,duplication,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmnecorp.com,acmnecorp.com,acmnecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmoecorp.com,acmoecorp.com,acmoecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmpecorp.com,acmpecorp.com,acmpecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmqecorp.com,acmqecorp.com,acmqecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmrcorp.com,acmrcorp.com,acmrcorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmrecorp.com,acmrecorp.com,acmrecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmsecorp.com,acmsecorp.com,acmsecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmtecorp.com,acmtecorp.com,acmtecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmuecorp.com,acmuecorp.com,acmuecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmvecorp.com,acmvecorp.com,acmvecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmwcorp.com,acmwcorp.com,acmwcorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmwecorp.com,acmwecorp.com,acmwecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmxecorp.com,acmxecorp.com,acmxecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmyecorp.com,acmyecorp.com,acmyecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acmzecorp.com,acmzecorp.com,acmzecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acnecorp.com,acnecorp.com,acnecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acnmecorp.com,acnmecorp.com,acnmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acomecorp.com,acomecorp.com,acomecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acpmecorp.com,acpmecorp.com,acpmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acqmecorp.com,acqmecorp.com,acqmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acrmecorp.com,acrmecorp.com,acrmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acsmecorp.com,acsmecorp.com,acsmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+actmecorp.com,actmecorp.com,actmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acumecorp.com,acumecorp.com,acumecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acvmecorp.com,acvmecorp.com,acvmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acwmecorp.com,acwmecorp.com,acwmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acxmecorp.com,acxmecorp.com,acxmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+acymecorp.com,acymecorp.com,acymecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aczmecorp.com,aczmecorp.com,aczmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+adcmecorp.com,adcmecorp.com,adcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+admecorp.com,admecorp.com,admecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aecmecorp.com,aecmecorp.com,aecmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+afcmecorp.com,afcmecorp.com,afcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+agcmecorp.com,agcmecorp.com,agcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+ahcmecorp.com,ahcmecorp.com,ahcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aicmecorp.com,aicmecorp.com,aicmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+ajcmecorp.com,ajcmecorp.com,ajcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+akcmecorp.com,akcmecorp.com,akcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+alcmecorp.com,alcmecorp.com,alcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+amcecorp.com,amcecorp.com,amcecorp.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+amcmecorp.com,amcmecorp.com,amcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+amecorp.com,amecorp.com,amecorp.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+ancmecorp.com,ancmecorp.com,ancmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aocmecorp.com,aocmecorp.com,aocmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+apcmecorp.com,apcmecorp.com,apcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aqcmecorp.com,aqcmecorp.com,aqcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+arcmecorp.com,arcmecorp.com,arcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+ascmecorp.com,ascmecorp.com,ascmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+atcmecorp.com,atcmecorp.com,atcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aucmecorp.com,aucmecorp.com,aucmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+avcmecorp.com,avcmecorp.com,avcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+avmecorp.com,avmecorp.com,avmecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+awcmecorp.com,awcmecorp.com,awcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+axcmecorp.com,axcmecorp.com,axcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+axmecorp.com,axmecorp.com,axmecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+aycmecorp.com,aycmecorp.com,aycmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+azcmecorp.com,azcmecorp.com,azcmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+bacmecorp.com,bacmecorp.com,bacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+cacmecorp.com,cacmecorp.com,cacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+camecorp.com,camecorp.com,camecorp.com,typosquat,transposition,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+cmecorp.com,cmecorp.com,cmecorp.com,typosquat,omission,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+dacmecorp.com,dacmecorp.com,dacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+eacmecorp.com,eacmecorp.com,eacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+facmecorp.com,facmecorp.com,facmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+gacmecorp.com,gacmecorp.com,gacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+hacmecorp.com,hacmecorp.com,hacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+iacmecorp.com,iacmecorp.com,iacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+jacmecorp.com,jacmecorp.com,jacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+kacmecorp.com,kacmecorp.com,kacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+lacmecorp.com,lacmecorp.com,lacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+macmecorp.com,macmecorp.com,macmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+nacmecorp.com,nacmecorp.com,nacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+oacmecorp.com,oacmecorp.com,oacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+pacmecorp.com,pacmecorp.com,pacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+qacmecorp.com,qacmecorp.com,qacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+qcmecorp.com,qcmecorp.com,qcmecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+racmecorp.com,racmecorp.com,racmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+sacmecorp.com,sacmecorp.com,sacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+scmecorp.com,scmecorp.com,scmecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+tacmecorp.com,tacmecorp.com,tacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+uacmecorp.com,uacmecorp.com,uacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+vacmecorp.com,vacmecorp.com,vacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+wacmecorp.com,wacmecorp.com,wacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+xacmecorp.com,xacmecorp.com,xacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+yacmecorp.com,yacmecorp.com,yacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+zacmecorp.com,zacmecorp.com,zacmecorp.com,typosquat,insertion,LOW,20,0,0,0,0,,,typosquat_distance_1:20
+zcmecorp.com,zcmecorp.com,zcmecorp.com,typosquat,qwerty_sub,LOW,20,0,0,0,0,,,typosquat_distance_1:20

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTEUS - Threat Intel</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <nav class="topbar">
+        <div class="logo">PROTEUS</div>
+        <div class="nav-links">
+            <a href="#" class="active" data-view="view-triage">Triage & Dossier</a>
+            <a href="#" data-view="view-constellation">Threat Map</a>
+            <a href="#" data-view="view-osint">OSINT Matrix</a>
+            <a href="#" data-view="view-history">History & PreCrime</a>
+        </div>
+    </nav>
+
+    <div class="command-strip">
+        <div class="scan-controls">
+            <input type="text" id="brand-input" value="acmecorp.com">
+            <select id="scan-pass">
+                <option value="1">Scan #1 (Baseline)</option>
+                <option value="2">Scan #2 (Drift Check)</option>
+            </select>
+            <label class="toggle-switch">
+                <input type="checkbox" id="online-toggle">
+                <span>Live Enrich</span>
+            </label>
+            <button id="scan-btn">Execute</button>
+        </div>
+        <div class="export-controls">
+            <button class="btn-outline" onclick="downloadCSV()">CSV</button>
+            <button class="btn-outline" onclick="downloadJSON()">JSON</button>
+            <button class="btn-outline" onclick="downloadMISPSelected()">MISP JSON</button>
+        </div>
+    </div>
+
+    <div class="kpi-bar" id="kpi-bar"></div>
+
+    <main class="container">
+        <section id="view-triage" class="view active">
+            <div class="split-layout">
+                <div class="list-pane">
+                    <div class="filter-bar" id="filter-pills">
+                        <span class="pill active" data-filter="ALL">ALL</span>
+                        <span class="pill" data-filter="CRITICAL">CRITICAL</span>
+                        <span class="pill" data-filter="HIGH">HIGH</span>
+                        <span class="pill" data-filter="WATCH">WATCH</span>
+                        <span class="pill" data-filter="LIVE">LIVE</span>
+                        <span class="pill" data-filter="DRIFT">DRIFT</span>
+                        <span class="pill" data-filter="PRECRIME">PRECRIME</span>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" id="search-input" placeholder="Search domains, techniques..." oninput="renderTriageList()">
+                    </div>
+                    <div id="findings-list"></div>
+                </div>
+                <div class="dossier-pane" id="investigation-drawer">
+                    <div class="empty-state">Select a finding to view the dossier.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-constellation" class="view">
+            <div class="map-tabs">
+                <div class="map-tab active" data-map="geo" onclick="switchMapTab('geo')">Geographic Threat Map</div>
+                <div class="map-tab" data-map="clusters" onclick="switchMapTab('clusters')">Campaign Clusters</div>
+                <div class="map-tab" data-map="matrix" onclick="switchMapTab('matrix')">IP & ASN Matrix</div>
+            </div>
+            <div class="map-content">
+                <div id="map-geo" class="map-pane active">
+                    <svg id="world-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#2A2F29" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="1000" height="500" fill="url(#grid)"/>
+                        <g id="country-pins"></g>
+                    </svg>
+                    <div id="geo-legend" class="geo-legend"></div>
+                    <div id="geo-inspector" class="geo-inspector"></div>
+                </div>
+                <div id="map-clusters" class="map-pane">
+                    <div id="clusters-container" class="clusters-grid"></div>
+                </div>
+                <div id="map-matrix" class="map-pane">
+                    <div style="padding: 24px; overflow-y: auto;">
+                        <table class="data-table" id="ip-table">
+                            <thead><tr><th>IP Address</th><th>ASN</th><th>Org</th><th>Country</th><th>Role</th><th>Connected Domains</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-osint" class="view">
+            <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                <h1 style="font-family:var(--font-display); margin-bottom: 8px;">OSINT Source Matrix</h1>
+                <p class="subhead" style="color:var(--text-dim); margin-bottom: 24px;">
+                    Source-to-indicator mapping and PROTEUS conclusions across registration, DNS/history, reputation, and hosting infrastructure.
+                </p>
+                <div id="osint-matrix-container"></div>
+            </div>
+        </section>
+
+        <section id="view-history" class="view">
+            <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                <h1 style="font-family:var(--font-display); margin-bottom: 8px;">History, Drift & PreCrime</h1>
+                <p class="subhead" style="color:var(--text-dim); margin-bottom: 32px;">Historical timeline, staging candidates, and verified drift.</p>
+                <div id="drift-matrix" class="matrix-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="takedown-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Takedown Report</h2>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div style="padding: 16px; border-bottom: 1px solid var(--border);">
+                <label style="color:var(--text-dim); margin-right: 8px;">Route to:</label>
+                <select id="takedown-channel" onchange="refreshTakedown()">
+                    <option>Domain Registrar</option>
+                    <option>Hosting Provider</option>
+                    <option>Google Safe Browsing</option>
+                    <option>Microsoft Defender SmartScreen</option>
+                    <option>APWG</option>
+                    <option>National CERT / CSIRT</option>
+                </select>
+            </div>
+            <pre id="modal-report-text" class="modal-body"></pre>
+            <div class="modal-actions">
+                <button class="btn-outline" onclick="copyReport()">Copy</button>
+                <button onclick="downloadReport()">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
