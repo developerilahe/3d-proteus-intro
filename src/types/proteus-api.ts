@@ -1,5 +1,5 @@
 export type Tier = 'CRITICAL' | 'HIGH' | 'WATCH' | 'LOW';
-export type FindingStatus = 'LIVE INFRA' | 'PRECRIME' | 'DRIFT DETECTED' | 'UNRESOLVED';
+export type FindingStatus = 'LIVE INFRA' | 'PRECRIME' | 'DRIFT DETECTED' | 'UNRESOLVED' | 'SAFE';
 
 export interface CandidateDto {
   domain: string;

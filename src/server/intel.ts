@@ -23,7 +23,7 @@ export function getBrandDna(
   scanPass: number
 ): Record<string, unknown> | null {
   const facts = finding.facts;
-  if (!facts || !facts.is_live) return null;
+  if (!facts || !facts.is_live || finding.score <= 15) return null;
   const h = deterministicHash(finding.candidate.domain + 'dna', 1000);
   const lures = luresIn(finding.candidate.registrable);
   let phrases = [
@@ -49,12 +49,13 @@ export function getBrandDna(
 
 export function getPrecrimeRisk(finding: Finding): number | null {
   const facts = finding.facts;
-  if (facts && facts.is_live) return null;
-  if (finding.tier !== 'WATCH' && finding.tier !== 'LOW') return null;
-  if (finding.similarity_pct < 85) return null;
+  if (!facts || facts.is_live) return null;
+  if (facts.created_days_ago === null || facts.created_days_ago > 30) return null;
+  if (finding.similarity_pct < 80) return null;
+  const lures = luresIn(finding.candidate.registrable);
+  if (lures.length === 0 && finding.candidate.importance !== 'Very High') return null;
   const h = deterministicHash(finding.candidate.domain + 'precrime', 100);
-  if (h % 9 !== 0) return null;
-  return 40 + (h % 36);
+  return 45 + (h % 30);
 }
 
 export function getDriftStatus(
@@ -62,7 +63,9 @@ export function getDriftStatus(
   scanPass: number
 ): { drift: boolean; driftData: Record<string, unknown> | null } {
   const facts = finding.facts;
-  if (!facts || !facts.is_live) return { drift: false, driftData: null };
+  if (!facts || !facts.is_live || finding.score <= 15) {
+    return { drift: false, driftData: null };
+  }
   const h = deterministicHash(finding.candidate.domain + 'drift', 1000);
   const drift = h % 11 === 0 || (scanPass >= 2 && h % 4 === 0);
   if (!drift) return { drift: false, driftData: null };
@@ -72,8 +75,8 @@ export function getDriftStatus(
     `45.${h % 200}.${Math.floor(h / 3) % 250}.${Math.floor(h / 7) % 250}`;
   const oldMx = h % 2 ? 'no MX' : `10 mail.${finding.candidate.registrable}`;
   const newMx = facts.mx_records.slice(0, 1).join(', ') || 'no MX';
-  const before = `A ${oldIp} · MX ${oldMx} · TLS issuer ${facts.tls_issuer || 'N/A'}`;
-  const after = `A ${facts.a_records.slice(0, 1).join(', ') || 'none'} · MX ${newMx} · TLS issuer ${facts.tls_issuer || 'N/A'}`;
+  const before = `IP ${oldIp} · Mail ${oldMx}`;
+  const after = `IP ${facts.a_records.slice(0, 1).join(', ') || 'none'} · Mail ${newMx}`;
   const now = new Date();
   const firstSeen = new Date(now.getTime() - (14 + (h % 40)) * 86_400_000)
     .toISOString()
@@ -282,13 +285,16 @@ export function buildOsintMatrix(_brand: string, finding: Finding): Record<strin
     facts && facts.created_days_ago !== null && facts.created_days_ago < 90
   );
   const https = Boolean(facts && facts.tls_issuer && facts.tls_issuer !== 'N/A');
-  const hasLogin = [
-    'combosquatting',
-    'suffix_addition',
-    'prefix_addition',
-    'brand_service',
-    'brand_typo_keyword',
-  ].includes(finding.candidate.technique);
+  const hasLogin =
+    finding.score > 15 &&
+    resolves &&
+    [
+      'combosquatting',
+      'suffix_addition',
+      'prefix_addition',
+      'brand_service',
+      'brand_typo_keyword',
+    ].includes(finding.candidate.technique);
   const hasLogo = finding.score >= 60 && resolves;
   const sharedInfra = Boolean(
     asn &&
@@ -450,7 +456,10 @@ export function buildOsintMatrix(_brand: string, finding: Finding): Record<strin
     https_observed: https ? `Yes — ${facts?.tls_issuer ?? ''}` : 'No',
     phishing_evidence: phishingEvidence,
     malware_evidence: malwareEvidence,
-    brand_impersonation: `Yes — similarity ${finding.similarity_pct}%, technique ${titleCase(finding.candidate.technique)}`,
+    brand_impersonation:
+      finding.score <= 15
+        ? 'No impersonation indicators detected'
+        : `Possible lookalike — similarity ${finding.similarity_pct}%`,
     login_form_observed: hasLogin ? 'Yes (fixture model)' : 'No',
     similar_logo_observed: hasLogo ? 'Yes (fixture model)' : 'No',
     shared_infrastructure: sharedInfra

@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Check, Copy, FileWarning, Share2 } from 'lucide-react';
 import type { FindingDto, ScanResultsDto } from '../../types/proteus-api.ts';
 import {
-  computeScoreBuckets,
   DomainWithConfusables,
+  formatRiskLevel,
+  formatStatusLabel,
   formatTechnique,
+  getPlainTakeaway,
+  getPrimaryIp,
+  getRecommendedStep,
+  isLiveFinding,
   LiveDnsSection,
   LiveIpSection,
   LiveReputationSection,
@@ -40,6 +45,47 @@ export function DossierPane({
   onOpenTakedown,
 }: DossierPaneProps) {
   const [copiedDomain, setCopiedDomain] = useState(false);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const rafRef = useRef<number>(0);
+
+  const syncScrollVars = useCallback(() => {
+    rafRef.current = 0;
+    const scroller = contentRef.current;
+    const stage = stageRef.current;
+    if (!scroller || !stage) return;
+
+    const maxScroll = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+    const progress = Math.min(1, Math.max(0, scroller.scrollTop / maxScroll));
+    const strokeOffset = Math.round(-(2400 * progress));
+    const tabletOffset = `${Math.round(-(0.55 * scroller.clientHeight * progress))}px`;
+
+    stage.style.setProperty('--strokeDashoffset', String(strokeOffset));
+    stage.style.setProperty('--tabletVerticaloffset', tabletOffset);
+  }, []);
+
+  const handleContentScroll = useCallback(() => {
+    if (dossierTab !== 'tab-overview') return;
+    if (!rafRef.current) {
+      rafRef.current = window.requestAnimationFrame(syncScrollVars);
+    }
+  }, [dossierTab, syncScrollVars]);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+    if (stageRef.current) {
+      stageRef.current.style.setProperty('--strokeDashoffset', '0');
+      stageRef.current.style.setProperty('--tabletVerticaloffset', '0px');
+    }
+    return () => {
+      if (rafRef.current) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
+      }
+    };
+  }, [activeFinding?.domain, dossierTab]);
 
   if (scanError) {
     return (
@@ -56,19 +102,27 @@ export function DossierPane({
       <div className="dossier-pane" id="investigation-drawer">
         <div className="empty-state">
           {scanning
-            ? 'Initializing scan…'
+            ? 'Checking domains and IP addresses…'
             : currentData
-              ? 'Scan returned zero findings.'
-              : 'Select a finding to inspect.'}
+              ? 'No domains returned for this scan.'
+              : 'Select a domain from the list to inspect.'}
         </div>
       </div>
     );
   }
 
+  const liveNow = isLiveFinding(activeFinding);
   const isLiveThreat =
-    activeFinding.status === 'LIVE INFRA' ||
-    activeFinding.status === 'DRIFT DETECTED';
-  const buckets = computeScoreBuckets(activeFinding.signals);
+    activeFinding.score > 15 &&
+    (activeFinding.status === 'LIVE INFRA' ||
+      activeFinding.status === 'DRIFT DETECTED' ||
+      activeFinding.status === 'PRECRIME');
+
+  const primaryIp = getPrimaryIp(activeFinding);
+  const statusLabel = formatStatusLabel(activeFinding.status);
+  const riskLevelLabel = formatRiskLevel(activeFinding.score, activeFinding.status);
+  const takeaway = getPlainTakeaway(activeFinding);
+  const nextStep = getRecommendedStep(activeFinding);
 
   const handleCopyDomain = async () => {
     try {
@@ -81,13 +135,31 @@ export function DossierPane({
   };
 
   const tierTone =
-    activeFinding.tier === 'CRITICAL'
-      ? 'var(--crit)'
-      : activeFinding.tier === 'HIGH'
-        ? 'var(--high)'
-        : activeFinding.tier === 'WATCH'
-          ? 'var(--watch)'
-          : 'var(--accent-text)';
+    activeFinding.status === 'SAFE' || activeFinding.score <= 15
+      ? 'var(--low)'
+      : activeFinding.tier === 'CRITICAL'
+        ? 'var(--crit)'
+        : activeFinding.tier === 'HIGH'
+          ? 'var(--high)'
+          : 'var(--watch)';
+
+  const facts = activeFinding.facts;
+  const hasMail = Boolean(
+    (facts?.mx_records?.length ?? 0) > 0 ||
+      (activeFinding.enrichment?.dns?.mx?.data?.length ?? 0) > 0
+  );
+  const hasMailProtection = Boolean(facts?.spf || facts?.dmarc);
+  const hostingLabel = facts?.asn_org
+    ? `${facts.asn_org}${facts.country ? ` (${facts.country})` : ''}`
+    : liveNow
+      ? 'Active server'
+      : 'Not active';
+  const domainAgeLabel =
+    facts?.created_days_ago != null
+      ? `${facts.created_days_ago} days`
+      : activeFinding.enrichment?.rdap?.data?.registration_date
+        ? activeFinding.enrichment.rdap.data.registration_date.slice(0, 10)
+        : 'Unknown';
 
   return (
     <div className="dossier-pane" id="investigation-drawer">
@@ -120,19 +192,13 @@ export function DossierPane({
             </div>
 
             <div className="dossier-meta">
-              <span>{activeFinding.candidate.ascii_form}</span>
-              <span aria-hidden="true">·</span>
-              <span>{activeFinding.status}</span>
-              <span aria-hidden="true">·</span>
-              <span>{activeFinding.candidate.registrable}</span>
-              <span aria-hidden="true">·</span>
-              <span
-                style={{
-                  color: currentData?.online_enrich ? 'var(--low)' : 'var(--text-mute)',
-                }}
-              >
-                {currentData?.online_enrich ? 'Live DNS / RDAP / CT' : 'Fixture Model'}
+              <span>
+                IP: <strong className="dossier-ip-val">{primaryIp}</strong>
               </span>
+              <span aria-hidden="true">·</span>
+              <span>{statusLabel}</span>
+              <span aria-hidden="true">·</span>
+              <span>{formatTechnique(activeFinding.candidate.technique)}</span>
             </div>
           </div>
 
@@ -141,27 +207,15 @@ export function DossierPane({
               {activeFinding.score}
               <span className="dossier-score-denom">/100</span>
             </div>
-            <div className="dossier-tier-line">{activeFinding.tier}</div>
+            <div className="dossier-tier-line" style={{ color: tierTone }}>
+              {riskLevelLabel}
+            </div>
           </div>
         </div>
 
-        {/* Quiet Inline Context & Action Row */}
-        <div className="dossier-context-row">
-          <div className="dossier-context-line">
-            <span className="dossier-tech-name">
-              {formatTechnique(activeFinding.candidate.technique)}
-            </span>
-            <span aria-hidden="true">·</span>
-            <span>{activeFinding.candidate.importance}</span>
-            <span aria-hidden="true">·</span>
-            <span>Weight {activeFinding.candidate.weight}/100</span>
-            <span aria-hidden="true">·</span>
-            <span>{activeFinding.similarity_pct}% similarity</span>
-            <span aria-hidden="true">·</span>
-            <span>{activeFinding.mutation_type}</span>
-          </div>
-
-          {isLiveThreat && currentScanId && (
+        {isLiveThreat && currentScanId && (
+          <div className="dossier-context-row">
+            <span className="dossier-context-note">{takeaway}</span>
             <div className="dossier-action-group">
               <button
                 type="button"
@@ -169,7 +223,7 @@ export function DossierPane({
                 onClick={() => onOpenTakedown(activeFinding.domain)}
               >
                 <FileWarning size={12} aria-hidden="true" />
-                <span>Takedown Report</span>
+                <span>Takedown Notice</span>
               </button>
               <button
                 type="button"
@@ -181,20 +235,20 @@ export function DossierPane({
                 }
               >
                 <Share2 size={12} aria-hidden="true" />
-                <span>MISP JSON</span>
+                <span>Export MISP</span>
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </header>
 
-      <div className="dossier-tabs" role="tablist" aria-label="Dossier Sections">
+      <div className="dossier-tabs" role="tablist" aria-label="Domain details">
         {(
           [
-            ['tab-overview', 'Summary'],
-            ['tab-infra', 'DNS & Network'],
-            ['tab-dna', 'Brand DNA & Drift'],
-            ['tab-osint', 'OSINT & Takedown'],
+            ['tab-overview', 'Overview'],
+            ['tab-infra', 'Server & DNS'],
+            ['tab-dna', 'Brand Check'],
+            ['tab-osint', 'Actions & Links'],
           ] as Array<[DossierTab, string]>
         ).map(([tabId, label]) => (
           <button
@@ -210,129 +264,198 @@ export function DossierPane({
         ))}
       </div>
 
-      <div className="dossier-content">
+      <div
+        ref={contentRef}
+        className={`dossier-content ${dossierTab === 'tab-overview' ? 'is-story-mode' : ''}`}
+        onScroll={handleContentScroll}
+      >
         {dossierTab === 'tab-overview' && (
-          <div className="dossier-stack">
-            <section>
-              <div className="section-title">Score Composition</div>
-              <div className="score-breakdown-card">
-                <div className="score-stack-bar" aria-label="Score composition bar">
-                  {buckets.technique > 0 && (
-                    <div
-                      className="score-seg seg-tech"
-                      style={{ width: `${buckets.technique}%` }}
-                      title={`Technique: +${buckets.technique}/50`}
-                    />
-                  )}
-                  {buckets.similarity > 0 && (
-                    <div
-                      className="score-seg seg-sim"
-                      style={{ width: `${buckets.similarity}%` }}
-                      title={`Similarity: +${buckets.similarity}/25`}
-                    />
-                  )}
-                  {buckets.lure > 0 && (
-                    <div
-                      className="score-seg seg-lure"
-                      style={{ width: `${buckets.lure}%` }}
-                      title={`Lure: +${buckets.lure}/10`}
-                    />
-                  )}
-                  {buckets.infra > 0 && (
-                    <div
-                      className="score-seg seg-infra"
-                      style={{ width: `${buckets.infra}%` }}
-                      title={`Infrastructure: +${buckets.infra}/15`}
-                    />
-                  )}
-                </div>
-                <div className="score-legend-row">
-                  <span>
-                    <i className="dot seg-tech" /> Technique{' '}
-                    <strong>{buckets.technique}</strong>/50
-                  </span>
-                  <span>
-                    <i className="dot seg-sim" /> Similarity{' '}
-                    <strong>{buckets.similarity}</strong>/25
-                  </span>
-                  <span>
-                    <i className="dot seg-lure" /> Lure{' '}
-                    <strong>{buckets.lure}</strong>/10
-                  </span>
-                  <span>
-                    <i className="dot seg-infra" /> Infrastructure{' '}
-                    <strong>{buckets.infra}</strong>/15
-                  </span>
-                </div>
-              </div>
-            </section>
+          <div
+            ref={stageRef}
+            className="cp-main"
+            style={
+              {
+                '--strokeDashoffset': '0',
+                '--tabletVerticaloffset': '0px',
+              } as React.CSSProperties
+            }
+          >
+            {/* 3D Tilted Tablet Background */}
+            <div className="cp-world3d" aria-hidden="true">
+              <div className="cp-tablet" />
+            </div>
 
-            <section>
-              <div className="section-title">Risk Signals</div>
-              <div className="clean-kv-list">
-                {activeFinding.signals.map((s, idx) => (
-                  <div key={idx} className="signal-item">
-                    <span className="signal-text">
-                      {s.label}
-                      {s.evidence && (
-                        <span className="evidence"> — {s.evidence}</span>
-                      )}
-                    </span>
-                    <span className="signal-pts">+{s.points}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Exact CodePen Glowing Gradient SVG Paths */}
+            <svg
+              id="cp-svgPaths"
+              width="740"
+              height="2000"
+              viewBox="0 0 740 2000"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="cp-cl1" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="20%" stopColor="#b169db" />
+                  <stop offset="45%" stopColor="#f7d152" />
+                  <stop offset="65%" stopColor="#46cf71" />
+                  <stop offset="85%" stopColor="#0fbffa" />
+                  <stop offset="100%" stopColor="#0fbffa" />
+                </linearGradient>
+                <path
+                  id="cp-linePath01"
+                  d="m 106,45h 375c 114,0 226,128 226,235v 236c 0,136 -122,222 -224,221l -182,-2c -89,1 -141,42 -142,158l -2,204c -1,117 37,173 134,173h 186c 110,-3 230,111 230,220v 242c 0,113 -125,225 -248,225H 105"
+                />
+                <path
+                  id="cp-linePath02"
+                  d="m 33,85h 444c 96,0 190,107 190,201v 224c 0,116 -98,188 -190,187l -192,-2c -92,0 -166,75 -166,168v 278c 0,94 74,169 166,169h 194c 92,0 188,94 188,188v 228c 0,94 -104,191 -214,191H 105"
+                />
+                <path
+                  id="cp-linePath03"
+                  d="m 155,127h 308c 94,0 162,86 162,177v 178c 0,109 -50,174 -166,173L 277,653C 158,653 77,762 77,849v 302c 0,118 107,196 180,197l 204,4c 92,0 164,67 164,160v 200c 0,91 -89,163 -188,163H 105"
+                />
+                <path
+                  id="cp-linePath04"
+                  d="m 283,173c 2,0 165,0 165,0C 544,175 577,238 577,330v 156c 0,94 -48,126 -140,125L 269,609C 167,602 29,702 29,851v 312c 0,111 101,235 242,235h 162c 109,1 144,49 144,136v 162c 0,73 -53,130 -118,130l -353,1"
+                />
+              </defs>
+              <use href="#cp-linePath01" className="cp-path-01" />
+              <use href="#cp-linePath02" className="cp-path-02" />
+              <use href="#cp-linePath03" className="cp-path-03" />
+              <use href="#cp-linePath04" className="cp-path-04" />
+            </svg>
 
-            <section>
-              <div className="section-title">Modeled Impact</div>
-              <div className="data-grid">
-                <div className="data-block">
-                  <div className="data-row">
-                    <span className="data-label">Harm Category</span>
-                    <span>{currentData?.impact.harm_category || 'N/A'}</span>
-                  </div>
-                  <div className="data-row">
-                    <span className="data-label">Triage Saved</span>
-                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {currentData?.impact.triage_hours ?? 0} hrs
-                    </span>
-                  </div>
-                </div>
-                <div className="data-block">
-                  <div className="data-row">
-                    <span className="data-label">Exposure</span>
-                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {currentData?.impact.exposure_low || 'N/A'} –{' '}
-                      {currentData?.impact.exposure_high || 'N/A'}
-                    </span>
-                  </div>
-                  <div className="data-row">
-                    <span className="data-label">Defensive Cost</span>
-                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {currentData?.impact.defensive_cost || 'N/A'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {!currentData?.online_enrich && activeFinding.timeline.length > 0 && (
-              <section>
-                <div className="section-title">Observed Timeline</div>
-                <div className="timeline">
-                  {activeFinding.timeline.map((t, idx) => (
-                    <div key={idx} className="timeline-item">
-                      <span className="timeline-date">{t.time.slice(0, 10)}</span>
-                      <span className="timeline-event">
-                        <span className="timeline-kind">{t.kind}</span>
-                        {t.event}
-                      </span>
+            {/* 4 Exact 300x450 Glassmorphic Gradient Cards */}
+            <div className="cp-cards">
+              {/* Card 1: Verdict & IP */}
+              <div className="cp-card-wrapper">
+                <article className="cp-card cp-card-hero">
+                  <div className="cp-card-inner">
+                    <div>
+                      <div className="cp-card-eyebrow">Overview</div>
+                      <p className="cp-hero-lead">{takeaway}</p>
                     </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                    <div className="cp-hero-facts">
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">IP Address</span>
+                        <span className="cp-fact-v">{primaryIp}</span>
+                      </div>
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">Status</span>
+                        <span className="cp-fact-v">{statusLabel}</span>
+                      </div>
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">Risk Score</span>
+                        <span className="cp-fact-v" style={{ color: tierTone }}>
+                          {activeFinding.score} / 100 · {riskLevelLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              {/* Card 2: Key Findings */}
+              <div className="cp-card-wrapper">
+                <article className="cp-card">
+                  <div className="cp-card-inner">
+                    <div>
+                      <div className="cp-card-eyebrow">Key Findings</div>
+                      <h4 className="cp-card-heading">What we found</h4>
+                    </div>
+                    <div className="cp-card-body">
+                      {activeFinding.signals.length > 0 ? (
+                        <ul className="cp-plain-list">
+                          {activeFinding.signals.slice(0, 4).map((s, idx) => (
+                            <li key={idx} className="cp-plain-item">
+                              <span className="cp-plain-title">{s.label}</span>
+                              {s.evidence && (
+                                <span className="cp-plain-sub">{s.evidence}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="cp-plain-empty">No suspicious signs detected.</p>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              {/* Card 3: Server & Safety */}
+              <div className="cp-card-wrapper">
+                <article className="cp-card">
+                  <div className="cp-card-inner">
+                    <div>
+                      <div className="cp-card-eyebrow">Server &amp; Safety</div>
+                      <h4 className="cp-card-heading">Where it points</h4>
+                    </div>
+                    <div className="cp-hero-facts">
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">IP Address</span>
+                        <span className="cp-fact-v">{primaryIp}</span>
+                      </div>
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">Hosting</span>
+                        <span className="cp-fact-v">{hostingLabel}</span>
+                      </div>
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">Email Sending</span>
+                        <span className="cp-fact-v">{hasMail ? 'Active' : 'None'}</span>
+                      </div>
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">Email Protection</span>
+                        <span className="cp-fact-v">
+                          {liveNow
+                            ? hasMailProtection
+                              ? 'Protected'
+                              : 'Missing'
+                            : 'Not active'}
+                        </span>
+                      </div>
+                      <div className="cp-fact-row">
+                        <span className="cp-fact-k">Domain Age</span>
+                        <span className="cp-fact-v">{domainAgeLabel}</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              {/* Card 4: Next Step */}
+              <div className="cp-card-wrapper">
+                <article className="cp-card">
+                  <div className="cp-card-inner">
+                    <div>
+                      <div className="cp-card-eyebrow">Next Step</div>
+                      <h4 className="cp-card-heading">Recommended action</h4>
+                      <p className="cp-plain-copy">{nextStep}</p>
+                    </div>
+                    <div className="cp-card-cta">
+                      {isLiveThreat && currentScanId ? (
+                        <button
+                          type="button"
+                          className="wb-btn-sm"
+                          onClick={() => onOpenTakedown(activeFinding.domain)}
+                        >
+                          <FileWarning size={13} aria-hidden="true" />
+                          <span>Create Takedown Notice</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn-inline-action"
+                          onClick={() => onChangeTab('tab-infra')}
+                        >
+                          <span>View Server &amp; DNS</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
           </div>
         )}
 
@@ -341,58 +464,56 @@ export function DossierPane({
             {currentData?.online_enrich && activeFinding.enrichment ? (
               <>
                 <section>
-                  <div className="section-title">DNS, RDAP &amp; Certificates</div>
+                  <div className="section-title">Live DNS, Registration &amp; SSL</div>
                   <LiveDnsSection enrichment={activeFinding.enrichment} />
                 </section>
                 <section>
-                  <div className="section-title">IP Allocation &amp; Reverse DNS</div>
+                  <div className="section-title">IP Network Details</div>
                   <LiveIpSection infrastructure={activeFinding.enrichment.infrastructure} />
                 </section>
               </>
             ) : (
               <>
                 <section>
-                  <div className="section-title">DNS &amp; Mail Posture</div>
+                  <div className="section-title">IP &amp; Mail Setup</div>
                   <div className="data-grid">
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">A Records</span>
-                        <span>{activeFinding.facts?.a_records.join(', ') || 'N/A'}</span>
+                        <span className="data-label">IPv4 Address</span>
+                        <span>{facts?.a_records.join(', ') || 'None'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">AAAA Records</span>
-                        <span>
-                          {activeFinding.facts?.aaaa_records.join(', ') || 'N/A'}
-                        </span>
+                        <span className="data-label">IPv6 Address</span>
+                        <span>{facts?.aaaa_records.join(', ') || 'None'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">MX Records</span>
-                        <span>{activeFinding.facts?.mx_records.join(', ') || 'N/A'}</span>
+                        <span className="data-label">Mail Servers</span>
+                        <span>{facts?.mx_records.join(', ') || 'None'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">NS Records</span>
-                        <span>{activeFinding.facts?.ns_records.join(', ') || 'N/A'}</span>
+                        <span className="data-label">Name Servers</span>
+                        <span>{facts?.ns_records.join(', ') || 'None'}</span>
                       </div>
                     </div>
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">SPF</span>
-                        <span>{activeFinding.facts?.spf ? 'Present' : 'Missing'}</span>
+                        <span className="data-label">SPF Protection</span>
+                        <span>{facts?.spf ? 'Present' : 'Missing'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">DMARC</span>
-                        <span>{activeFinding.facts?.dmarc ? 'Present' : 'Missing'}</span>
+                        <span className="data-label">DMARC Protection</span>
+                        <span>{facts?.dmarc ? 'Present' : 'Missing'}</span>
                       </div>
                       <div className="data-row">
                         <span className="data-label">Registrar</span>
-                        <span>{activeFinding.facts?.registrar || 'N/A'}</span>
+                        <span>{facts?.registrar || 'Unknown'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">Created</span>
+                        <span className="data-label">Domain Age</span>
                         <span>
-                          {activeFinding.facts?.created_days_ago != null
-                            ? `${activeFinding.facts.created_days_ago} days ago`
-                            : 'N/A'}
+                          {facts?.created_days_ago != null
+                            ? `${facts.created_days_ago} days`
+                            : 'Unknown'}
                         </span>
                       </div>
                     </div>
@@ -400,112 +521,62 @@ export function DossierPane({
                 </section>
 
                 <section>
-                  <div className="section-title">TLS / SSL Certificate</div>
+                  <div className="section-title">SSL Padlock Certificate</div>
                   <div className="data-grid">
                     <div className="data-block">
                       <div className="data-row">
                         <span className="data-label">Issuer</span>
-                        <span>{activeFinding.facts?.tls_issuer || 'N/A'}</span>
+                        <span>{facts?.tls_issuer || 'None'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">Subject CN</span>
-                        <span>{activeFinding.facts?.tls_subject || 'N/A'}</span>
-                      </div>
-                      <div className="data-row">
-                        <span className="data-label">Fingerprint</span>
-                        <span style={{ wordBreak: 'break-all' }}>
-                          {activeFinding.facts?.tls_fingerprint || 'N/A'}
-                        </span>
+                        <span className="data-label">Issued To</span>
+                        <span>{facts?.tls_subject || 'None'}</span>
                       </div>
                     </div>
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">Not Before</span>
+                        <span className="data-label">Valid From</span>
                         <span>
-                          {activeFinding.facts?.tls_not_before &&
-                          activeFinding.facts.tls_not_before !== 'N/A'
-                            ? activeFinding.facts.tls_not_before.slice(0, 10)
+                          {facts?.tls_not_before && facts.tls_not_before !== 'N/A'
+                            ? facts.tls_not_before.slice(0, 10)
                             : 'N/A'}
                         </span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">Not After</span>
+                        <span className="data-label">Valid Until</span>
                         <span>
-                          {activeFinding.facts?.tls_not_after &&
-                          activeFinding.facts.tls_not_after !== 'N/A'
-                            ? activeFinding.facts.tls_not_after.slice(0, 10)
+                          {facts?.tls_not_after && facts.tls_not_after !== 'N/A'
+                            ? facts.tls_not_after.slice(0, 10)
                             : 'N/A'}
                         </span>
-                      </div>
-                      <div className="data-row">
-                        <span className="data-label">SANs</span>
-                        <span>{activeFinding.facts?.tls_sans.join(', ') || 'N/A'}</span>
                       </div>
                     </div>
                   </div>
                 </section>
 
                 <section>
-                  <div className="section-title">IP, ASN &amp; Ownership</div>
+                  <div className="section-title">Hosting Provider</div>
                   <div className="data-grid">
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">ASN</span>
-                        <span>{activeFinding.facts?.asn || 'N/A'}</span>
-                      </div>
-                      <div className="data-row">
-                        <span className="data-label">ASN Org</span>
-                        <span>{activeFinding.facts?.asn_org || 'N/A'}</span>
+                        <span className="data-label">Provider</span>
+                        <span>{facts?.asn_org || 'Unknown'}</span>
                       </div>
                       <div className="data-row">
                         <span className="data-label">Country</span>
-                        <span>{activeFinding.facts?.country || 'N/A'}</span>
-                      </div>
-                      <div className="data-row">
-                        <span className="data-label">Role</span>
-                        <span>{activeFinding.facts?.infra_role || 'N/A'}</span>
+                        <span>{facts?.country || 'Unknown'}</span>
                       </div>
                     </div>
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">Netblock</span>
-                        <span>{activeFinding.facts?.netblock || 'N/A'}</span>
-                      </div>
-                      <div className="data-row">
-                        <span className="data-label">rDNS / PTR</span>
-                        <span>{activeFinding.facts?.rdns || 'N/A'}</span>
+                        <span className="data-label">Server Role</span>
+                        <span>{facts?.infra_role || 'None'}</span>
                       </div>
                       <div className="data-row">
                         <span className="data-label">Abuse Contact</span>
-                        <span>{activeFinding.facts?.abuse_contact || 'N/A'}</span>
-                      </div>
-                      <div className="data-row">
-                        <span className="data-label">Data Source</span>
-                        <span>{activeFinding.facts?.source || 'NO DATA'}</span>
+                        <span>{facts?.abuse_contact || 'Unavailable'}</span>
                       </div>
                     </div>
-                  </div>
-                </section>
-
-                <section>
-                  <div className="section-title">Historical IPs</div>
-                  <div className="data-block">
-                    {activeFinding.facts?.past_ips &&
-                    activeFinding.facts.past_ips.length > 0 ? (
-                      activeFinding.facts.past_ips.map((p, i) => (
-                        <div key={i} className="data-row">
-                          <span className="data-label">Past IP</span>
-                          <span>
-                            {p.ip} · {p.seen.slice(0, 10)}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="data-row">
-                        <span className="data-label">Past IPs</span>
-                        <span>None recorded</span>
-                      </div>
-                    )}
                   </div>
                 </section>
               </>
@@ -517,59 +588,59 @@ export function DossierPane({
           <div className="dossier-stack">
             {currentData?.online_enrich ? (
               <p className="quiet-note">
-                Brand DNA and identity drift telemetry were not collected in live lookup mode.
+                Page similarity and change history are checked in standard scan mode.
               </p>
             ) : activeFinding.dna ? (
               <>
                 <section>
-                  <div className="section-title">Brand DNA Match</div>
+                  <div className="section-title">Brand Similarity</div>
                   <div className="data-grid">
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">Impersonation Similarity</span>
+                        <span className="data-label">Page Similarity</span>
                         <strong>{activeFinding.dna.similarity_pct}%</strong>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">Logo Match</span>
-                        <span>{activeFinding.dna.logo_match ? 'YES' : 'NO'}</span>
+                        <span className="data-label">Uses Brand Logo</span>
+                        <span>{activeFinding.dna.logo_match ? 'Yes' : 'No'}</span>
                       </div>
                     </div>
                     <div className="data-block">
                       <div className="data-row">
-                        <span className="data-label">Login Form</span>
-                        <span>{activeFinding.dna.login_form ? 'YES' : 'NO'}</span>
+                        <span className="data-label">Login Form Found</span>
+                        <span>{activeFinding.dna.login_form ? 'Yes' : 'No'}</span>
                       </div>
                       <div className="data-row">
-                        <span className="data-label">Visual Match</span>
-                        <span>{activeFinding.dna.visual_match ? 'YES' : 'NO'}</span>
+                        <span className="data-label">Visual Clone</span>
+                        <span>{activeFinding.dna.visual_match ? 'Yes' : 'No'}</span>
                       </div>
                     </div>
                   </div>
                   <div className="dna-phrases-row">
-                    Matched phrases: {activeFinding.dna.matched_phrases.join(', ')}
+                    Matched text: {activeFinding.dna.matched_phrases.join(', ')}
                   </div>
                 </section>
 
                 <section>
-                  <div className="section-title">Identity Drift</div>
+                  <div className="section-title">Recent Changes</div>
                   {activeFinding.drift && activeFinding.drift_data ? (
                     <div className="drift-box">
-                      <div className="drift-step-label">Scan #1 (Baseline)</div>
+                      <div className="drift-step-label">Earlier Scan</div>
                       <div className="drift-step-val">{activeFinding.drift_data.before}</div>
                       <div className="drift-step-label" style={{ marginTop: 14 }}>
-                        Scan #2 (Observed Change)
+                        Latest Scan
                       </div>
                       <div className="drift-step-val" style={{ color: 'var(--crit)' }}>
                         {activeFinding.drift_data.after}
                       </div>
                     </div>
                   ) : (
-                    <p className="quiet-note">No infrastructure drift observed between passes.</p>
+                    <p className="quiet-note">No sudden changes detected for this domain.</p>
                   )}
                 </section>
               </>
             ) : (
-              <p className="quiet-note">Not observed — domain has no active surface.</p>
+              <p className="quiet-note">No active web page or brand clone signs found.</p>
             )}
           </div>
         )}
@@ -585,7 +656,7 @@ export function DossierPane({
                     className="wb-btn"
                     onClick={() => onOpenTakedown(activeFinding.domain)}
                   >
-                    Generate Takedown Report
+                    Create Takedown Notice
                   </button>
                   <a
                     className="btn-outline"
@@ -604,7 +675,7 @@ export function DossierPane({
                 </div>
               ) : (
                 <div className="quiet-empty-box">
-                  No active hosting observed. Takedown workflow is standby.
+                  No takedown needed right now. This domain shows low risk.
                 </div>
               )}
             </section>
@@ -612,12 +683,12 @@ export function DossierPane({
             <section>
               {currentData?.online_enrich && activeFinding.enrichment ? (
                 <>
-                  <div className="section-title">Live Threat Feeds</div>
+                  <div className="section-title">Threat Reputation</div>
                   <LiveReputationSection reputation={activeFinding.enrichment.reputation} />
                 </>
               ) : (
                 <>
-                  <div className="section-title">News &amp; Advisories</div>
+                  <div className="section-title">Reports &amp; Feeds</div>
                   {(activeFinding.osint.intel ?? []).length > 0 ? (
                     activeFinding.osint.intel!.map((n, i) => {
                       const href = safeExternalUrl(n.link);
@@ -630,16 +701,11 @@ export function DossierPane({
                                 {n.type} · {n.sentiment}
                               </div>
                             </div>
-                            <span className={`news-badge ${n.kind}`}>
-                              {n.kind === 'live' ? 'LIVE PUBLIC' : 'FIXTURE'}
-                            </span>
                           </div>
                           <div className="news-title">{n.title}</div>
                           <div className="news-summary">{n.summary}</div>
                           <div className="news-meta">
-                            <span>
-                              {n.date.slice(0, 19).replace('T', ' ')} UTC
-                            </span>
+                            <span>{n.date.slice(0, 10)}</span>
                             {href && (
                               <a
                                 href={href}
@@ -655,14 +721,14 @@ export function DossierPane({
                       );
                     })
                   ) : (
-                    <p className="quiet-note">No external news or advisories observed.</p>
+                    <p className="quiet-note">No external threat reports found.</p>
                   )}
                 </>
               )}
             </section>
 
             <section>
-              <div className="section-title">External OSINT Pivot Links</div>
+              <div className="section-title">Quick Lookup Links</div>
               <div className="osint-grid">
                 {Object.entries(activeFinding.osint.links ?? {}).map(
                   ([category, links]) => (

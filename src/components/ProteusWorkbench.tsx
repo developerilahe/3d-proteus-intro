@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUp, Search, X } from 'lucide-react';
+import {
+  ArrowUp,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
 import type {
   FindingDto,
   GeoPointDto,
@@ -9,8 +15,11 @@ import type {
 import { DossierPane, type DossierTab } from './workbench/DossierPane.tsx';
 import {
   DomainWithConfusables,
+  formatRiskLevel,
+  formatStatusLabel,
   formatTechnique,
-  importanceClass,
+  getPrimaryIp,
+  isLiveFinding,
   LiveDnsSection,
   LiveIpSection,
   LiveReputationSection,
@@ -22,18 +31,17 @@ import { WorldThreatMap } from './workbench/WorldThreatMap.tsx';
 
 type MainView = 'view-triage' | 'view-constellation' | 'view-osint' | 'view-history';
 type MapTab = 'geo' | 'clusters' | 'matrix';
-type FilterMode = 'ALL' | 'CRITICAL' | 'HIGH' | 'LIVE' | 'DRIFT' | 'PRECRIME';
+type FilterMode = 'ALL' | 'ELEVATED' | 'LIVE' | 'PRECRIME' | 'SAFE';
+
+const CANDIDATE_RANGE_OPTIONS = [25, 50, 100, 250] as const;
 
 const FILTER_OPTIONS: Array<{ id: FilterMode; label: string }> = [
-  { id: 'ALL', label: 'All' },
-  { id: 'CRITICAL', label: 'Critical' },
-  { id: 'HIGH', label: 'High' },
-  { id: 'LIVE', label: 'Live' },
-  { id: 'DRIFT', label: 'Drift' },
-  { id: 'PRECRIME', label: 'PreCrime' },
+  { id: 'ALL', label: 'All Domains' },
+  { id: 'ELEVATED', label: 'High & Critical' },
+  { id: 'LIVE', label: 'Active Sites' },
+  { id: 'PRECRIME', label: 'Early Warning' },
+  { id: 'SAFE', label: 'Safe & Low' },
 ];
-
-const QUICK_BRAND_PRESETS = ['acmecorp.com', 'pashabank.az'] as const;
 
 export interface ExternalBrandScanRequest {
   brand: string;
@@ -41,21 +49,28 @@ export interface ExternalBrandScanRequest {
 }
 
 interface ProteusWorkbenchProps {
+  onScanStart?: () => void;
+  onExitDashboard?: () => void;
   onBackTo3D?: () => void;
   externalBrandRequest?: ExternalBrandScanRequest | null;
 }
 
 export function ProteusWorkbench({
+  onScanStart,
+  onExitDashboard,
   onBackTo3D,
   externalBrandRequest,
 }: ProteusWorkbenchProps) {
-  const [brandInput, setBrandInput] = useState<string>('acmecorp.com');
+  const [hasStartedScan, setHasStartedScan] = useState<boolean>(false);
+  const [brandInput, setBrandInput] = useState<string>('');
+  const [maxCandidates, setMaxCandidates] = useState<number>(50);
   const [scanPass, setScanPass] = useState<1 | 2>(1);
   const [onlineEnrich, setOnlineEnrich] = useState<boolean>(false);
 
   const [activeView, setActiveView] = useState<MainView>('view-triage');
   const [activeFilter, setActiveFilter] = useState<FilterMode>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [dossierTab, setDossierTab] = useState<DossierTab>('tab-overview');
   const [mapTab, setMapTab] = useState<MapTab>('geo');
 
@@ -77,7 +92,7 @@ export function ProteusWorkbench({
 
   const pollTimerRef = useRef<number | null>(null);
   const mountedRef = useRef<boolean>(true);
-  const lastLoadedBrandRef = useRef<string>('acmecorp.com');
+  const filterPopoverRef = useRef<HTMLDivElement | null>(null);
 
   const clearPoll = useCallback(() => {
     if (pollTimerRef.current !== null) {
@@ -87,24 +102,34 @@ export function ProteusWorkbench({
   }, []);
 
   const executeScan = useCallback(
-    async (brandValue: string, passValue: 1 | 2, onlineValue: boolean) => {
+    async (
+      brandValue: string,
+      passValue: 1 | 2,
+      onlineValue: boolean,
+      candidateLimit: number
+    ) => {
+      const targetBrand = brandValue.trim();
+      if (!targetBrand) return;
+
       clearPoll();
+      setHasStartedScan(true);
+      onScanStart?.();
+      setActiveView('view-triage');
+      setFilterOpen(false);
       setScanning(true);
       setScanError(null);
       setSearchQuery('');
+      setActiveFilter('ALL');
       setInspectedCountry(null);
       setProgress({
         scan_id: '',
         status: 'pending',
         progress_pct: 0,
-        current_step: 'initializing scan',
-        domains_total: 0,
+        current_step: 'Scanning domains and checking servers',
+        domains_total: candidateLimit,
         domains_processed: 0,
         findings_so_far: 0,
       });
-
-      const targetBrand = brandValue.trim() || 'acmecorp.com';
-      lastLoadedBrandRef.current = targetBrand.toLowerCase();
 
       try {
         const res = await fetch('/api/scan', {
@@ -115,6 +140,7 @@ export function ProteusWorkbench({
             scan_pass: passValue,
             online_enrich: onlineValue,
             inspect_websites: false,
+            max_candidates: candidateLimit,
           }),
         });
 
@@ -155,7 +181,7 @@ export function ProteusWorkbench({
           void pollOnce();
           pollTimerRef.current = window.setInterval(() => {
             void pollOnce();
-          }, 350);
+          }, 300);
         });
 
         const resultsRes = await fetch(`/api/scan/${scanId}/results`);
@@ -181,80 +207,72 @@ export function ProteusWorkbench({
         if (mountedRef.current) setScanning(false);
       }
     },
-    [clearPoll]
+    [clearPoll, onScanStart]
   );
 
   useEffect(() => {
     mountedRef.current = true;
-    void executeScan('acmecorp.com', 1, false);
     return () => {
       mountedRef.current = false;
       clearPoll();
     };
-  }, [executeScan, clearPoll]);
+  }, [clearPoll]);
 
   useEffect(() => {
     if (!externalBrandRequest || externalBrandRequest.nonce === 0) return;
     const requested = externalBrandRequest.brand.trim().toLowerCase();
     if (!requested) return;
     setBrandInput(requested);
-    if (requested !== lastLoadedBrandRef.current) {
-      setActiveFilter('ALL');
-      void executeScan(requested, scanPass, onlineEnrich);
-    }
-  }, [externalBrandRequest, executeScan, scanPass, onlineEnrich]);
+    void executeScan(requested, scanPass, onlineEnrich, maxCandidates);
+  }, [externalBrandRequest, executeScan, scanPass, onlineEnrich, maxCandidates]);
+
+  useEffect(() => {
+    if (!filterOpen) return;
+    const onPointerDown = (e: MouseEvent) => {
+      if (
+        filterPopoverRef.current &&
+        !filterPopoverRef.current.contains(e.target as Node)
+      ) {
+        setFilterOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFilterOpen(false);
+    };
+    window.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('mousedown', onPointerDown);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [filterOpen]);
 
   const findings = currentData?.findings ?? [];
 
-  const filterCounts = useMemo<Record<FilterMode, number>>(() => {
-    let critical = 0;
-    let high = 0;
-    let live = 0;
-    let drift = 0;
-    let precrime = 0;
-
-    for (const f of findings) {
-      if (f.tier === 'CRITICAL') critical += 1;
-      else if (f.tier === 'HIGH') high += 1;
-
-      if (f.status === 'LIVE INFRA') live += 1;
-      else if (f.status === 'DRIFT DETECTED') drift += 1;
-      else if (f.status === 'PRECRIME') precrime += 1;
-    }
-
-    return {
-      ALL: findings.length,
-      CRITICAL: critical,
-      HIGH: high,
-      LIVE: live,
-      DRIFT: drift,
-      PRECRIME: precrime,
-    };
-  }, [findings]);
-
   const filteredFindings = useMemo(() => {
     let items = findings;
-    if (activeFilter !== 'ALL') {
-      if (activeFilter === 'LIVE') {
-        items = items.filter((f) => f.status === 'LIVE INFRA');
-      } else if (activeFilter === 'DRIFT') {
-        items = items.filter((f) => f.status === 'DRIFT DETECTED');
-      } else if (activeFilter === 'PRECRIME') {
-        items = items.filter((f) => f.status === 'PRECRIME');
-      } else {
-        items = items.filter((f) => f.tier === activeFilter);
-      }
+    if (activeFilter === 'ELEVATED') {
+      items = items.filter((f) => f.tier === 'CRITICAL' || f.tier === 'HIGH');
+    } else if (activeFilter === 'LIVE') {
+      items = items.filter((f) => isLiveFinding(f));
+    } else if (activeFilter === 'PRECRIME') {
+      items = items.filter(
+        (f) => f.status === 'PRECRIME' || f.status === 'DRIFT DETECTED'
+      );
+    } else if (activeFilter === 'SAFE') {
+      items = items.filter((f) => f.status === 'SAFE' || f.score <= 15);
     }
+
     const q = searchQuery.trim().toLowerCase();
     if (q) {
       items = items.filter((f) => {
-        const tech = f.candidate?.technique ?? '';
-        const techHuman = formatTechnique(tech).toLowerCase();
+        const ip = getPrimaryIp(f).toLowerCase();
+        const statusText = formatStatusLabel(f.status).toLowerCase();
         return (
           f.domain.toLowerCase().includes(q) ||
           f.candidate.ascii_form.toLowerCase().includes(q) ||
-          tech.toLowerCase().includes(q) ||
-          techHuman.includes(q)
+          ip.includes(q) ||
+          statusText.includes(q)
         );
       });
     }
@@ -271,22 +289,9 @@ export function ProteusWorkbench({
     return findings.find((f) => f.domain === activeOsintDomain) ?? findings[0];
   }, [findings, activeOsintDomain]);
 
-  const liveThreatsCount = useMemo(
-    () =>
-      findings.filter(
-        (f) => f.status === 'LIVE INFRA' || f.status === 'DRIFT DETECTED'
-      ).length,
-    [findings]
-  );
-
-  const driftOrPrecrimeCount = useMemo(
-    () => findings.filter((f) => f.drift || f.precrime !== null).length,
-    [findings]
-  );
-
   const driftFindings = useMemo(() => findings.filter((f) => f.drift), [findings]);
   const precrimeFindings = useMemo(
-    () => findings.filter((f) => f.precrime !== null && !f.drift),
+    () => findings.filter((f) => f.precrime !== null && !f.drift && f.score > 15),
     [findings]
   );
 
@@ -305,7 +310,7 @@ export function ProteusWorkbench({
         setReportText(data.report ?? '');
       } catch (err) {
         setReportText(
-          `Failed to fetch report: ${err instanceof Error ? err.message : 'Unknown error'}`
+          `Failed to load notice: ${err instanceof Error ? err.message : 'Unknown error'}`
         );
       }
     },
@@ -377,230 +382,147 @@ export function ProteusWorkbench({
     if (target) selectFindingFromAnywhere(target);
   };
 
-  const runPresetBrand = (preset: string) => {
-    setBrandInput(preset);
-    setActiveFilter('ALL');
-    if (!scanning) {
-      void executeScan(preset, scanPass, onlineEnrich);
+  const triggerDriftCheck = () => {
+    setScanPass(2);
+    if (!scanning && brandInput.trim()) {
+      void executeScan(brandInput, 2, onlineEnrich, maxCandidates);
     }
   };
 
-  const triggerDriftCheck = () => {
-    setScanPass(2);
-    if (!scanning) {
-      void executeScan(brandInput, 2, onlineEnrich);
-    }
+  const resetToLaunch = () => {
+    clearPoll();
+    setHasStartedScan(false);
+    setScanning(false);
+    setScanError(null);
+    setProgress(null);
+    setCurrentData(null);
+    setCurrentScanId(null);
+    setSelectedDomain(null);
+    setFilterOpen(false);
+    setSearchQuery('');
+    setActiveFilter('ALL');
+    onExitDashboard?.();
+  };
+
+  const hasActiveFilter = activeFilter !== 'ALL' || searchQuery.trim().length > 0;
+
+  const handleLaunchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!brandInput.trim() || scanning) return;
+    void executeScan(brandInput, scanPass, onlineEnrich, maxCandidates);
   };
 
   return (
-    <section id="proteus-workbench" aria-label="PROTEUS — Threat Intelligence Workbench">
-      <div className="wb-shell">
-        {/* Minimal Executive Header */}
-        <header className="wb-hero-head">
-          <div className="wb-head-top">
-            <span className="wb-eyebrow">THREAT INTELLIGENCE SUITE</span>
-            {onBackTo3D && (
-              <button type="button" className="btn-back-3d" onClick={onBackTo3D}>
-                <ArrowUp size={12} aria-hidden="true" />
-                <span>3D Pipeline</span>
-              </button>
-            )}
-          </div>
-          <h2 className="wb-title">Protect what you own.</h2>
-          <p className="wb-subtitle">
-            Scan any domain to uncover impersonation infrastructure, map global threat clusters, and trigger takedowns.
-          </p>
-        </header>
+    <section
+      id="proteus-workbench"
+      className={hasStartedScan ? 'is-dashboard' : 'is-launch'}
+      aria-label="PROTEUS Domain Scanner"
+    >
+      {!hasStartedScan ? (
+        /* ============================================================
+           MINIMALIST CENTERED LAUNCH BLOCK (BEFORE SCAN RUNS)
+           ============================================================ */
+        <div className="wb-launch-screen">
+          <form className="wb-launch-card" onSubmit={handleLaunchSubmit}>
+            <h2 className="wb-launch-title">Enter any Domain!</h2>
 
-        {/* Single Hero Search & Scan Bar */}
-        <div className="wb-search-hero">
-          <Search size={17} className="wb-search-hero-icon" aria-hidden="true" />
-          <input
-            type="text"
-            id="brand-input"
-            aria-label="Target brand domain"
-            placeholder="Enter a target domain (e.g. acmecorp.com or pashabank.az)"
-            value={brandInput}
-            onChange={(e) => setBrandInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !scanning) {
-                void executeScan(brandInput, scanPass, onlineEnrich);
-              }
-            }}
-          />
-          <button
-            type="button"
-            id="scan-btn"
-            className="wb-btn"
-            disabled={scanning}
-            onClick={() => void executeScan(brandInput, scanPass, onlineEnrich)}
-          >
-            {scanning ? 'Scanning…' : 'Run Scan'}
-          </button>
-        </div>
-
-        {/* Quiet Sub-Controls Bar */}
-        <div className="wb-subcontrols">
-          <div className="wb-subcontrols-left">
-            <div className="preset-group" role="group" aria-label="Fixture brand presets">
-              <span className="subcontrol-label">Samples</span>
-              {QUICK_BRAND_PRESETS.map((preset) => {
-                const isCurrent =
-                  (currentData?.brand.toLowerCase() ?? brandInput.trim().toLowerCase()) ===
-                  preset;
-                return (
-                  <button
-                    key={preset}
-                    type="button"
-                    disabled={scanning}
-                    className={`preset-btn ${isCurrent ? 'active' : ''}`}
-                    onClick={() => runPresetBrand(preset)}
-                  >
-                    {preset}
-                  </button>
-                );
-              })}
-            </div>
-
-            <span className="subcontrol-sep" aria-hidden="true" />
-
-            <div className="pass-segment" role="group" aria-label="Scan pass mode">
-              <button
-                type="button"
-                className={`pass-seg-btn ${scanPass === 1 ? 'active' : ''}`}
-                onClick={() => setScanPass(1)}
-              >
-                Baseline
-              </button>
-              <button
-                type="button"
-                className={`pass-seg-btn ${scanPass === 2 ? 'active' : ''}`}
-                onClick={() => setScanPass(2)}
-              >
-                Drift Check
-              </button>
-            </div>
-
-            <span className="subcontrol-sep" aria-hidden="true" />
-
-            <label
-              className="toggle-switch"
-              title="Query live public DNS, RDAP, and crt.sh Certificate Transparency"
-            >
+            <div className="wb-launch-input-wrap">
+              <Search size={16} className="wb-launch-icon" aria-hidden="true" />
               <input
-                type="checkbox"
-                id="online-toggle"
-                checked={onlineEnrich}
-                onChange={(e) => setOnlineEnrich(e.target.checked)}
+                type="text"
+                id="brand-input"
+                aria-label="Domain to scan"
+                placeholder="example.com"
+                value={brandInput}
+                onChange={(e) => setBrandInput(e.target.value)}
+                autoComplete="off"
+                spellCheck={false}
               />
-              <span>Live DNS &amp; RDAP</span>
-            </label>
-          </div>
+            </div>
 
-          <div className="export-controls">
+            <div className="wb-range-presets" role="group" aria-label="Number of domains to scan">
+              {CANDIDATE_RANGE_OPTIONS.map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  className={`wb-range-btn ${maxCandidates === count ? 'active' : ''}`}
+                  onClick={() => setMaxCandidates(count)}
+                >
+                  {count}
+                </button>
+              ))}
+            </div>
+
             <button
-              type="button"
-              className="btn-outline"
-              disabled={!currentScanId || !currentData}
-              onClick={() => {
-                if (!currentScanId) return;
-                triggerUrlDownload(
-                  `/api/export/csv?scan_id=${currentScanId}`,
-                  `proteus_triage_${currentScanId}.csv`
-                );
-              }}
+              type="submit"
+              id="scan-btn"
+              className="wb-launch-submit"
+              disabled={!brandInput.trim() || scanning}
             >
-              CSV
+              Start Scan
             </button>
-            <button
-              type="button"
-              className="btn-outline"
-              disabled={!currentScanId || !currentData}
-              onClick={() => {
-                if (!currentScanId) return;
-                triggerUrlDownload(
-                  `/api/export/json?scan_id=${currentScanId}`,
-                  `proteus_triage_${currentScanId}.json`
-                );
-              }}
-            >
-              JSON
-            </button>
-            <button
-              type="button"
-              className="btn-outline"
-              disabled={!currentScanId || !activeFinding}
-              onClick={() => {
-                if (!currentScanId || !activeFinding) return;
-                triggerUrlDownload(
-                  `/api/export/misp/${encodeURIComponent(activeFinding.domain)}?scan_id=${currentScanId}`
-                );
-              }}
-            >
-              MISP
-            </button>
-          </div>
+          </form>
         </div>
-
-        {/* Live Progress Bar */}
-        {progress && (
-          <div id="scan-progress" className="scan-progress" aria-live="polite">
-            <div className="scan-progress-meta">
-              <span id="progress-step">{progress.current_step}</span>
-              <span id="progress-counts">
-                {progress.domains_processed}/{progress.domains_total} domains ·{' '}
-                {progress.findings_so_far} findings ({progress.progress_pct}%)
-              </span>
-            </div>
-            <div className="scan-progress-track">
-              <div
-                id="progress-bar"
-                className="scan-progress-fill"
-                style={{ width: `${Math.min(100, progress.progress_pct)}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Quiet 4-Stat Typographic Strip */}
-        {currentData && (
-          <div className="kpi-bar" id="kpi-bar">
-            <div className="kpi-box">
-              <span className="kpi-label">Target Domain</span>
-              <span className="kpi-value kpi-target" title={currentData.brand}>
-                {currentData.brand}
-              </span>
-            </div>
-            <div className="kpi-box">
-              <span className="kpi-label">Permutations</span>
-              <span className="kpi-value">{currentData.generated}</span>
-            </div>
-            <div className="kpi-box">
-              <span className="kpi-label">Live Threats</span>
-              <span
-                className="kpi-value"
-                style={{ color: liveThreatsCount > 0 ? 'var(--crit)' : '#f3f4f8' }}
+      ) : (
+        /* ============================================================
+           FULL-SCREEN DASHBOARD (100vw ON SCAN)
+           ============================================================ */
+        <div className="wb-dashboard-screen">
+          {/* Compact Top Bar */}
+          <header className="wb-dash-topbar">
+            <div className="wb-dash-brand-bar">
+              <form
+                className="wb-dash-search-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!scanning && brandInput.trim()) {
+                    void executeScan(brandInput, scanPass, onlineEnrich, maxCandidates);
+                  }
+                }}
               >
-                {liveThreatsCount}
-              </span>
-            </div>
-            <div className="kpi-box">
-              <span className="kpi-label">Clusters · Saved</span>
-              <span className="kpi-value">
-                {currentData.clusters.length}
-                <span className="kpi-value-sub">
-                  {' '}
-                  · {currentData.impact.triage_hours} hrs
-                </span>
-              </span>
-            </div>
-          </div>
-        )}
+                <Search size={14} className="wb-dash-search-icon" aria-hidden="true" />
+                <input
+                  type="text"
+                  id="brand-input"
+                  aria-label="Target domain"
+                  placeholder="Enter domain"
+                  value={brandInput}
+                  onChange={(e) => setBrandInput(e.target.value)}
+                />
+                <select
+                  aria-label="Domains to scan"
+                  value={maxCandidates}
+                  onChange={(e) => setMaxCandidates(Number(e.target.value))}
+                  className="wb-dash-range-select"
+                >
+                  {CANDIDATE_RANGE_OPTIONS.map((count) => (
+                    <option key={count} value={count}>
+                      {count} domains
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  id="scan-btn"
+                  className="wb-btn-compact"
+                  disabled={!brandInput.trim() || scanning}
+                >
+                  {scanning ? 'Scanning…' : 'Scan'}
+                </button>
+              </form>
 
-        {/* Unified Minimalist Workspace */}
-        <div className="wb-frame">
-          <nav className="topbar" aria-label="Workbench navigation">
-            <div className="nav-links" role="tablist" aria-label="Workbench Views">
+              <button
+                type="button"
+                className="btn-outline"
+                onClick={resetToLaunch}
+                title="Start a new domain scan"
+              >
+                <RotateCcw size={12} aria-hidden="true" />
+                <span>New</span>
+              </button>
+            </div>
+
+            <nav className="nav-links" role="tablist" aria-label="Dashboard views">
               <button
                 type="button"
                 role="tab"
@@ -608,7 +530,7 @@ export function ProteusWorkbench({
                 className={`nav-tab ${activeView === 'view-triage' ? 'active' : ''}`}
                 onClick={() => setActiveView('view-triage')}
               >
-                Triage ({findings.length})
+                Domains ({findings.length})
               </button>
               <button
                 type="button"
@@ -617,7 +539,7 @@ export function ProteusWorkbench({
                 className={`nav-tab ${activeView === 'view-constellation' ? 'active' : ''}`}
                 onClick={() => setActiveView('view-constellation')}
               >
-                Threat Map ({currentData?.geo.length ?? 0})
+                Threat Map
               </button>
               <button
                 type="button"
@@ -626,7 +548,7 @@ export function ProteusWorkbench({
                 className={`nav-tab ${activeView === 'view-osint' ? 'active' : ''}`}
                 onClick={() => setActiveView('view-osint')}
               >
-                OSINT Matrix
+                OSINT
               </button>
               <button
                 type="button"
@@ -635,67 +557,170 @@ export function ProteusWorkbench({
                 className={`nav-tab ${activeView === 'view-history' ? 'active' : ''}`}
                 onClick={() => setActiveView('view-history')}
               >
-                Drift &amp; PreCrime
-                {driftOrPrecrimeCount > 0 ? ` (${driftOrPrecrimeCount})` : ''}
+                Changes
               </button>
+            </nav>
+
+            <div className="wb-dash-actions">
+              <label
+                className="toggle-switch"
+                title="Query live public DNS, RDAP, and SSL certificates"
+              >
+                <input
+                  type="checkbox"
+                  id="online-toggle"
+                  checked={onlineEnrich}
+                  onChange={(e) => setOnlineEnrich(e.target.checked)}
+                />
+                <span>Live DNS</span>
+              </label>
+
+              <button
+                type="button"
+                className="btn-outline"
+                disabled={!currentScanId || !currentData}
+                onClick={() => {
+                  if (!currentScanId) return;
+                  triggerUrlDownload(
+                    `/api/export/csv?scan_id=${currentScanId}`,
+                    `proteus_scan_${currentScanId}.csv`
+                  );
+                }}
+              >
+                CSV
+              </button>
+              <button
+                type="button"
+                className="btn-outline"
+                disabled={!currentScanId || !currentData}
+                onClick={() => {
+                  if (!currentScanId) return;
+                  triggerUrlDownload(
+                    `/api/export/json?scan_id=${currentScanId}`,
+                    `proteus_scan_${currentScanId}.json`
+                  );
+                }}
+              >
+                JSON
+              </button>
+
+              {onBackTo3D && (
+                <button type="button" className="btn-back-3d" onClick={onBackTo3D}>
+                  <ArrowUp size={12} aria-hidden="true" />
+                  <span>3D View</span>
+                </button>
+              )}
             </div>
+          </header>
 
-            {currentData && (
-              <div className="topbar-status">
-                {currentData.scan_pass === 2 ? 'Pass #2 · Drift Active' : 'Pass #1 · Baseline'}
+          {/* Compact Progress Strip */}
+          {progress && (
+            <div id="scan-progress" className="scan-progress" aria-live="polite">
+              <div className="scan-progress-meta">
+                <span id="progress-step">{progress.current_step}</span>
+                <span id="progress-counts">
+                  {progress.domains_processed}/{progress.domains_total} ({progress.progress_pct}%)
+                </span>
               </div>
-            )}
-          </nav>
+              <div className="scan-progress-track">
+                <div
+                  id="progress-bar"
+                  className="scan-progress-fill"
+                  style={{ width: `${Math.min(100, progress.progress_pct)}%` }}
+                />
+              </div>
+            </div>
+          )}
 
-          {/* Main View Body */}
+          {/* Full-Screen Workspace Body */}
           <div className="wb-container">
-            {/* VIEW 1: TRIAGE & DOSSIER */}
+            {/* VIEW 1: SCANNED DOMAINS SPLIT VIEW */}
             {activeView === 'view-triage' && (
               <div id="view-triage" className="view active">
                 <div className="split-layout">
-                  {/* Left List Pane */}
+                  {/* Left Domain List with Single Filter Icon Popover */}
                   <div className="list-pane">
-                    <div className="filter-bar" id="filter-pills">
-                      {FILTER_OPTIONS.map((flt) => (
-                        <button
-                          key={flt.id}
-                          type="button"
-                          className={`filter-tab ${activeFilter === flt.id ? 'active' : ''}`}
-                          onClick={() => setActiveFilter(flt.id)}
-                        >
-                          <span>{flt.label}</span>
-                          <span className="filter-tab-count">{filterCounts[flt.id]}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="search-bar">
-                      <div className="search-input-wrap">
-                        <input
-                          type="text"
-                          id="search-input"
-                          aria-label="Filter domains or techniques"
-                          placeholder="Filter domains or techniques…"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        {searchQuery && (
-                          <button
-                            type="button"
-                            className="search-clear-btn"
-                            aria-label="Clear filter"
-                            onClick={() => setSearchQuery('')}
-                          >
-                            <X size={13} aria-hidden="true" />
-                          </button>
-                        )}
+                    <div className="list-pane-header" ref={filterPopoverRef}>
+                      <div className="list-pane-title-wrap">
+                        <span className="list-pane-title">Scanned Domains</span>
+                        <span className="list-pane-count">{filteredFindings.length}</span>
                       </div>
+
+                      <button
+                        type="button"
+                        className={`filter-icon-btn ${hasActiveFilter ? 'is-filtered' : ''}`}
+                        aria-label="Filter scanned domains"
+                        aria-expanded={filterOpen}
+                        onClick={() => setFilterOpen((v) => !v)}
+                        title="Filter domains"
+                      >
+                        <SlidersHorizontal size={15} aria-hidden="true" />
+                      </button>
+
+                      {filterOpen && (
+                        <div className="filter-popover" role="dialog" aria-label="Filter domains">
+                          <div className="filter-popover-search">
+                            <Search size={13} className="filter-pop-icon" aria-hidden="true" />
+                            <input
+                              type="text"
+                              id="search-input"
+                              aria-label="Search domain or IP"
+                              placeholder="Search domain or IP…"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              autoFocus
+                            />
+                            {searchQuery && (
+                              <button
+                                type="button"
+                                className="search-clear-btn"
+                                aria-label="Clear search"
+                                onClick={() => setSearchQuery('')}
+                              >
+                                <X size={12} aria-hidden="true" />
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="filter-popover-options">
+                            {FILTER_OPTIONS.map((flt) => (
+                              <button
+                                key={flt.id}
+                                type="button"
+                                className={`filter-pop-opt ${
+                                  activeFilter === flt.id ? 'active' : ''
+                                }`}
+                                onClick={() => {
+                                  setActiveFilter(flt.id);
+                                  setFilterOpen(false);
+                                }}
+                              >
+                                {flt.label}
+                              </button>
+                            ))}
+                          </div>
+
+                          {hasActiveFilter && (
+                            <button
+                              type="button"
+                              className="filter-pop-reset"
+                              onClick={() => {
+                                setActiveFilter('ALL');
+                                setSearchQuery('');
+                                setFilterOpen(false);
+                              }}
+                            >
+                              Reset filters
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div
                       id="findings-list"
                       role="listbox"
-                      aria-label="Triaged domains"
+                      aria-label="Scanned domains"
                       tabIndex={0}
                       onKeyDown={handleListKeyDown}
                     >
@@ -704,27 +729,25 @@ export function ProteusWorkbench({
                           Error: {scanError}
                         </div>
                       ) : !currentData ? (
-                        <div className="empty-state">Running baseline scan…</div>
+                        <div className="empty-state">Scanning domains…</div>
                       ) : filteredFindings.length === 0 ? (
-                        <div className="empty-state">No findings match this filter.</div>
+                        <div className="empty-state">No domains match your filter.</div>
                       ) : (
                         filteredFindings.map((f) => {
-                          const dotClass =
-                            f.status === 'DRIFT DETECTED'
-                              ? 'dot-drift'
-                              : f.status === 'LIVE INFRA'
-                                ? 'dot-live'
-                                : f.status === 'PRECRIME'
-                                  ? 'dot-precrime'
-                                  : 'dot-mute';
-                          const techLabel = formatTechnique(f.candidate.technique);
+                          const isSafe = f.status === 'SAFE' || f.score <= 15;
+                          const ipText = getPrimaryIp(f);
+                          const statusText = formatStatusLabel(f.status);
                           const isActive = activeFinding?.domain === f.domain;
+                          const scoreToneClass = isSafe
+                            ? 'tier-SAFE'
+                            : `tier-${f.tier}`;
+
                           return (
                             <div
                               key={f.domain + '|' + f.candidate.rule}
                               role="option"
                               aria-selected={isActive}
-                              className={`finding-row tier-${f.tier} ${isActive ? 'active' : ''}`}
+                              className={`finding-row ${scoreToneClass} ${isActive ? 'active' : ''}`}
                               onClick={() => selectFindingFromAnywhere(f)}
                             >
                               <div className="f-row-left">
@@ -732,12 +755,9 @@ export function ProteusWorkbench({
                                   <DomainWithConfusables domain={f.domain} />
                                 </span>
                                 <div className="f-subrow">
-                                  <span className="f-status-inline">
-                                    <i className={`status-dot ${dotClass}`} aria-hidden="true" />
-                                    <span>{f.status}</span>
-                                  </span>
+                                  <span className="f-status-inline">{statusText}</span>
                                   <span aria-hidden="true">·</span>
-                                  <span className="sub-label">{techLabel}</span>
+                                  <span className="sub-label">{ipText}</span>
                                 </div>
                               </div>
                               <span className="f-score">{f.score}</span>
@@ -748,7 +768,7 @@ export function ProteusWorkbench({
                     </div>
                   </div>
 
-                  {/* Right Dossier Pane */}
+                  {/* Right Inspector Pane (First Domain Pre-Opened) */}
                   <DossierPane
                     activeFinding={activeFinding}
                     currentData={currentData}
@@ -766,12 +786,12 @@ export function ProteusWorkbench({
             {/* VIEW 2: THREAT MAP & INFRASTRUCTURE */}
             {activeView === 'view-constellation' && (
               <div id="view-constellation" className="view active">
-                <div className="map-tabs" role="tablist" aria-label="Infrastructure Views">
+                <div className="map-tabs" role="tablist" aria-label="Infrastructure views">
                   {(
                     [
                       ['geo', `Global Map (${currentData?.geo.length ?? 0})`],
-                      ['clusters', `Campaign Clusters (${currentData?.clusters.length ?? 0})`],
-                      ['matrix', 'IP & ASN Matrix'],
+                      ['clusters', `Shared Servers (${currentData?.clusters.length ?? 0})`],
+                      ['matrix', 'Server Table'],
                     ] as Array<[MapTab, string]>
                   ).map(([tab, label]) => (
                     <button
@@ -802,7 +822,7 @@ export function ProteusWorkbench({
                       <div id="clusters-container" className="clusters-grid">
                         {!currentData || currentData.clusters.length === 0 ? (
                           <div className="empty-state" style={{ gridColumn: '1 / -1' }}>
-                            No shared infrastructure clusters detected.
+                            No shared hosting clusters detected.
                           </div>
                         ) : (
                           currentData.clusters.map((c) => (
@@ -811,20 +831,12 @@ export function ProteusWorkbench({
                                 <div>
                                   <div className="cluster-ip">{c.ip}</div>
                                   <div className="cluster-meta">
-                                    {c.asn} · {c.org}
-                                  </div>
-                                  <div className="cluster-meta">
-                                    {c.country} · {c.role}
+                                    {c.org} · {c.country}
                                   </div>
                                 </div>
                                 <div className="cluster-conf">
-                                  {c.confidence}%
-                                  <br />
-                                  confidence
+                                  {c.members.length} domains
                                 </div>
-                              </div>
-                              <div className="cluster-count-line">
-                                {c.members.length} domains · {c.threats} threats
                               </div>
                               {c.members.map((m) => (
                                 <button
@@ -836,17 +848,7 @@ export function ProteusWorkbench({
                                   <span>
                                     <DomainWithConfusables domain={m.domain} />
                                   </span>
-                                  <span
-                                    style={{
-                                      fontVariantNumeric: 'tabular-nums',
-                                      color:
-                                        m.tier === 'CRITICAL'
-                                          ? 'var(--crit)'
-                                          : m.tier === 'HIGH'
-                                            ? 'var(--high)'
-                                            : 'var(--text-mute)',
-                                    }}
-                                  >
+                                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>
                                     {m.score}
                                   </span>
                                 </button>
@@ -866,32 +868,30 @@ export function ProteusWorkbench({
                           <thead>
                             <tr>
                               <th>IP Address</th>
-                              <th>ASN</th>
-                              <th>Org</th>
+                              <th>Provider</th>
                               <th>Country</th>
                               <th>Role</th>
-                              <th>Connected Domains</th>
+                              <th>Domains</th>
                             </tr>
                           </thead>
                           <tbody>
                             {!currentData || currentData.clusters.length === 0 ? (
                               <tr>
                                 <td
-                                  colSpan={6}
+                                  colSpan={5}
                                   style={{
                                     textAlign: 'center',
                                     color: 'var(--text-mute)',
                                     padding: 32,
                                   }}
                                 >
-                                  No shared infrastructure detected.
+                                  No shared servers detected.
                                 </td>
                               </tr>
                             ) : (
                               currentData.clusters.map((c) => (
                                 <tr key={c.ip + c.asn}>
                                   <td style={{ color: 'var(--accent-text)' }}>{c.ip}</td>
-                                  <td>{c.asn}</td>
                                   <td>{c.org}</td>
                                   <td>{c.country}</td>
                                   <td>{c.role}</td>
@@ -925,14 +925,14 @@ export function ProteusWorkbench({
             {activeView === 'view-osint' && (
               <div id="view-osint" className="view active">
                 <div className="view-scroll-pad">
-                  <h3 className="view-heading">OSINT Source Matrix</h3>
+                  <h3 className="view-heading">Public Records &amp; Threat Checks</h3>
                   <p className="view-subhead">
-                    Source-to-indicator mapping across registration, DNS history, reputation, and hosting infrastructure.
+                    Registration, DNS, and threat lookup summaries for any scanned domain.
                   </p>
 
                   {!osintTarget ? (
                     <div className="empty-state">
-                      Run a scan first to populate the OSINT matrix.
+                      Scan a domain first to see public record summaries.
                     </div>
                   ) : (
                     <>
@@ -941,7 +941,7 @@ export function ProteusWorkbench({
                           htmlFor="osint-domain-select"
                           style={{ color: 'var(--text-dim)', fontSize: 12 }}
                         >
-                          Inspecting:
+                          Domain:
                         </label>
                         <select
                           id="osint-domain-select"
@@ -950,20 +950,16 @@ export function ProteusWorkbench({
                         >
                           {findings.slice(0, 40).map((f) => (
                             <option key={f.domain} value={f.domain}>
-                              {f.domain} · {f.tier} ({f.score})
+                              {f.domain} · {formatRiskLevel(f.score, f.status)} ({f.score})
                             </option>
                           ))}
                         </select>
-                        <span className="badge" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                          {osintTarget.tier} · {osintTarget.score}/100 ·{' '}
-                          {formatTechnique(osintTarget.candidate.technique)}
-                        </span>
                         <button
                           type="button"
                           className="btn-inline-action"
                           onClick={() => selectFindingFromAnywhere(osintTarget, true)}
                         >
-                          Open in Triage ↗
+                          Open Overview ↗
                         </button>
                       </div>
 
@@ -984,7 +980,7 @@ export function ProteusWorkbench({
                               className="osint-section-title"
                               style={{ marginBottom: 12 }}
                             >
-                              Discovery Matrix Conclusions
+                              Summary
                             </div>
                             {Object.entries(
                               osintTarget.osint_matrix.conclusions ?? {}
@@ -1002,13 +998,6 @@ export function ProteusWorkbench({
                             <div key={sec.category} className="osint-section">
                               <div className="osint-section-head">
                                 <div className="osint-section-title">{sec.category}</div>
-                                <span
-                                  className={`relevance rel-${sec.relevance
-                                    .toLowerCase()
-                                    .replace(/[^a-z]/g, '')}`}
-                                >
-                                  Relevance: {sec.relevance}
-                                </span>
                               </div>
                               <div className="osint-sources">
                                 {sec.sources.map((s) => {
@@ -1017,7 +1006,6 @@ export function ProteusWorkbench({
                                     <div key={s.name} className="osint-source-row">
                                       <div className="osint-source-name">
                                         <span>{s.name}</span>
-                                        <span className="news-badge">{s.tag}</span>
                                       </div>
                                       <div className="osint-source-conclusion">
                                         {s.conclusion}
@@ -1053,25 +1041,25 @@ export function ProteusWorkbench({
               </div>
             )}
 
-            {/* VIEW 4: DRIFT & PRECRIME */}
+            {/* VIEW 4: RECENT CHANGES & EARLY WARNINGS */}
             {activeView === 'view-history' && (
               <div id="view-history" className="view active">
                 <div className="view-scroll-pad">
                   <div className="history-head-row">
                     <div>
-                      <h3 className="view-heading">Drift &amp; PreCrime Staging</h3>
+                      <h3 className="view-heading">Sudden Changes &amp; Early Warnings</h3>
                       <p className="view-subhead" style={{ marginBottom: 0 }}>
-                        Early pre-weaponization staging candidates and verified infrastructure drift across passes.
+                        Lookalikes showing sudden server changes or early phishing setup signs.
                       </p>
                     </div>
                     {currentData?.scan_pass !== 2 && (
                       <button
                         type="button"
-                        className="wb-btn"
+                        className="wb-btn-compact"
                         disabled={scanning}
                         onClick={triggerDriftCheck}
                       >
-                        Run Scan #2 (Drift Check)
+                        Check for Changes
                       </button>
                     )}
                   </div>
@@ -1080,15 +1068,15 @@ export function ProteusWorkbench({
                     {driftFindings.length === 0 && precrimeFindings.length === 0 ? (
                       <div className="empty-state" style={{ gridColumn: '1 / -1' }}>
                         <p style={{ marginBottom: 14 }}>
-                          No drift or PreCrime alerts in this baseline pass.
+                          No sudden changes or early warnings detected in this scan.
                         </p>
                         <button
                           type="button"
-                          className="wb-btn"
+                          className="wb-btn-compact"
                           disabled={scanning}
                           onClick={triggerDriftCheck}
                         >
-                          Run Scan #2 (Drift Check)
+                          Run Change Check
                         </button>
                       </div>
                     ) : (
@@ -1111,22 +1099,13 @@ export function ProteusWorkbench({
                               <div className="f-domain" style={{ fontSize: 15 }}>
                                 <DomainWithConfusables domain={f.domain} />
                               </div>
-                              <span className="badge drift">DRIFT</span>
+                              <span className="badge drift">Changed</span>
                             </div>
-                            <div
-                              className={`technique-tag ${importanceClass(
-                                f.candidate.importance
-                              )}`}
-                              style={{ marginBottom: 14 }}
-                            >
-                              {formatTechnique(f.candidate.technique)} ·{' '}
-                              {f.candidate.importance} ({f.candidate.weight}/100)
-                            </div>
-                            <div className="drift-step-label">Scan #1</div>
+                            <div className="drift-step-label">Before</div>
                             <div className="drift-step-val" style={{ marginBottom: 10 }}>
                               {f.drift_data?.before || 'N/A'}
                             </div>
-                            <div className="drift-step-label">Scan #2</div>
+                            <div className="drift-step-label">Now</div>
                             <div className="drift-step-val" style={{ color: 'var(--crit)' }}>
                               {f.drift_data?.after || 'N/A'}
                             </div>
@@ -1151,18 +1130,13 @@ export function ProteusWorkbench({
                               <div className="f-domain" style={{ fontSize: 15 }}>
                                 <DomainWithConfusables domain={f.domain} />
                               </div>
-                              <span className="badge precrime">PRECRIME</span>
+                              <span className="badge precrime">Early Warning</span>
                             </div>
-                            <div
-                              className={`technique-tag ${importanceClass(
-                                f.candidate.importance
-                              )}`}
-                              style={{ marginBottom: 14 }}
-                            >
-                              {formatTechnique(f.candidate.technique)} ·{' '}
-                              {f.candidate.importance} ({f.candidate.weight}/100)
+                            <div className="drift-step-label">IP Address</div>
+                            <div className="drift-step-val" style={{ marginBottom: 10 }}>
+                              {getPrimaryIp(f)}
                             </div>
-                            <div className="drift-step-label">PreCrime Likelihood</div>
+                            <div className="drift-step-label">Risk Score</div>
                             <div
                               className="drift-step-val"
                               style={{
@@ -1170,7 +1144,7 @@ export function ProteusWorkbench({
                                 fontVariantNumeric: 'tabular-nums',
                               }}
                             >
-                              {f.precrime}% pre-weaponization likelihood
+                              {f.score} / 100
                             </div>
                           </div>
                         ))}
@@ -1182,7 +1156,7 @@ export function ProteusWorkbench({
             )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Takedown Modal */}
       <TakedownModal

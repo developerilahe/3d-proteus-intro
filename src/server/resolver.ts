@@ -690,3 +690,74 @@ export class DynamicResolver {
     return { facts: liveFactsFromEnrichment(enrichment), enrichment };
   }
 }
+
+export async function resolveTargetBaseline(
+  domain: string
+): Promise<{ facts: DnsFacts | null; enrichment: DomainEnrichment | null }> {
+  const asciiDomain = toAscii(domain);
+  const asciiReg = toAscii(registrableDomain(domain));
+  if (!isValidDomainInput(asciiDomain) || !isValidDomainInput(asciiReg)) {
+    return { facts: null, enrichment: null };
+  }
+
+  const fixture = new FixtureResolver();
+  const fixtureFacts = fixture.lookup(asciiReg);
+  if (fixtureFacts) {
+    return { facts: fixtureFacts, enrichment: null };
+  }
+
+  const dnsRes = await lookupDnsLive(asciiDomain);
+  const aRecords = dnsRes.a.data ?? [];
+  const aaaaRecords = dnsRes.aaaa.data ?? [];
+  const mxRecords = (dnsRes.mx.data ?? []).filter((r) => r.trim() !== '0 .');
+  const nsRecords = dnsRes.ns.data ?? [];
+  const spf = dnsRes.spf.data?.[0] ?? null;
+  const dmarc = dnsRes.dmarc.data?.[0] ?? null;
+  const isLive = aRecords.length > 0 || aaaaRecords.length > 0 || mxRecords.length > 0;
+
+  if (!isLive && nsRecords.length === 0 && !spf && !dmarc) {
+    return { facts: null, enrichment: null };
+  }
+
+  const firstIp = aRecords[0] ?? aaaaRecords[0];
+  let infra: IpInfrastructure[] = [];
+  if (firstIp && isPublicRoutableIp(firstIp)) {
+    infra = [await lookupIpLive(firstIp)];
+  }
+  const ipReg = infra[0]?.registration.data;
+
+  const facts: DnsFacts = {
+    a_records: aRecords,
+    aaaa_records: aaaaRecords,
+    mx_records: mxRecords,
+    ns_records: nsRecords,
+    spf,
+    dmarc,
+    created_days_ago: null,
+    registrar: null,
+    asn: null,
+    asn_org: ipReg?.name ?? null,
+    country: ipReg?.country_code ?? null,
+    region: ipReg?.country_code ?? null,
+    netblock:
+      ipReg?.start_address && ipReg?.end_address
+        ? `${ipReg.start_address} - ${ipReg.end_address}`
+        : null,
+    infra_role: null,
+    rdns: infra[0]?.ptr.data?.[0] ?? null,
+    abuse_contact: null,
+    past_ips: [],
+    tls_issuer: null,
+    tls_subject: asciiDomain,
+    tls_sans: [],
+    tls_not_before: null,
+    tls_not_after: null,
+    tls_fingerprint: null,
+    source: 'LIVE PUBLIC',
+    is_live: isLive,
+    is_mail_enabled: mxRecords.length > 0,
+  };
+
+  return { facts, enrichment: null };
+}
+

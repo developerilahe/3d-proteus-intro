@@ -17,41 +17,27 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
   const engineRef = useRef<ProteusScene3DHandle | null>(null);
   const hasAutoStartedRef = useRef<boolean>(false);
   const nodeRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const packetRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const latestCoordsRef = useRef<{
     nodeCoords: Record<string, ProjectedCoord>;
-    packetCoords: Record<string, ProjectedCoord>;
-  }>({ nodeCoords: {}, packetCoords: {} });
+  }>({ nodeCoords: {} });
 
   const [brandKey, setBrandKey] = useState<BrandProfileKey>('pashabank.az');
-  const [stepIndex, setStepIndex] = useState<number>(0);
+  const [stepIndex, setStepIndex] = useState<number>(1);
   const [autoplay, setAutoplay] = useState<boolean>(false);
 
   const brand = BRAND_PROFILES[brandKey];
   const step = WALKTHROUGH_STEPS[stepIndex];
   const activeLabels = step.labels(brand);
-  const routePackets = step.routePackets(brand);
   const traceCard = step.traceCard(brand);
 
   const syncProjectedPositions = useCallback(() => {
-    const { nodeCoords, packetCoords } = latestCoordsRef.current;
+    const { nodeCoords } = latestCoordsRef.current;
 
     Object.entries(nodeRefs.current).forEach(([nodeId, el]) => {
       if (!el) return;
       const pos = nodeCoords[nodeId];
       if (pos && pos.visible) {
         el.style.display = 'block';
-        el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -100%)`;
-      } else {
-        el.style.display = 'none';
-      }
-    });
-
-    Object.entries(packetRefs.current).forEach(([arcId, el]) => {
-      if (!el) return;
-      const pos = packetCoords[arcId];
-      if (pos && pos.visible) {
-        el.style.display = 'inline-flex';
         el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -100%)`;
       } else {
         el.style.display = 'none';
@@ -64,7 +50,7 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
     if (!el) return;
 
     const engine = createProteusScene3D(el, {
-      initialStep: 0,
+      initialStep: 1,
       onSelectNode: (nodeId) => {
         setAutoplay(false);
         const matchIdx = WALKTHROUGH_STEPS.findIndex((s) => s.activeNodes.includes(nodeId));
@@ -73,15 +59,15 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
           engine.setStep(matchIdx, true);
         }
       },
-      onFrameProject: (nodeCoords, packetCoords) => {
-        latestCoordsRef.current = { nodeCoords, packetCoords };
+      onFrameProject: (nodeCoords) => {
+        latestCoordsRef.current = { nodeCoords };
         syncProjectedPositions();
       },
     });
     engineRef.current = engine;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      // Do not hijack keys while user is typing in Section 2 search/inputs or listbox
+      // Do not hijack keys while user is typing in inputs or listbox
       const activeEl = document.activeElement;
       const activeTag = activeEl?.tagName;
       if (
@@ -126,8 +112,8 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
           if (!entry) return;
           if (entry.isIntersecting && !hasAutoStartedRef.current) {
             hasAutoStartedRef.current = true;
-            setStepIndex(0);
-            engine.playScrollEntrance();
+            setStepIndex(1);
+            engine.playScrollEntrance(1);
             setAutoplay(true);
           } else if (!entry.isIntersecting && hasAutoStartedRef.current) {
             setAutoplay(false);
@@ -186,7 +172,7 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
       </header>
 
       {/* Minimal Short Node Tags on Active Structures */}
-      {activeLabels.map((lbl) => (
+      {activeLabels.slice(0, 2).map((lbl) => (
         <div
           key={lbl.nodeId}
           ref={(el) => {
@@ -200,32 +186,16 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
         </div>
       ))}
 
-      {/* Forward-Only URL Route Tags Gliding Along Active Arcs */}
-      {routePackets.map((pkt) => (
-        <div
-          key={pkt.arcId}
-          ref={(el) => {
-            packetRefs.current[pkt.arcId] = el;
-          }}
-          className={`pb-packet-pill ${pkt.kind === 'drop' ? 'is-drop' : ''}`}
-          style={{ display: 'none' }}
-        >
-          <span className="pb-packet-mark" aria-hidden="true" />
-          <span>{pkt.label}</span>
-        </div>
-      ))}
-
-      {/* One Compact Right-Hand Telemetry & Impact Card */}
+      {/* Clean Right-Hand Summary Card */}
       <aside className="pb-telemetry-card" aria-label={traceCard.tag}>
         <div className="pb-tel-head">
           <div className="pb-tel-tag">{traceCard.tag}</div>
-          <span className="pb-provenance">{traceCard.provenance}</span>
         </div>
         <h2 className="pb-tel-title">{traceCard.title}</h2>
 
         {traceCard.rows.length > 0 && (
           <div className="pb-tel-rows">
-            {traceCard.rows.map((r, i) => (
+            {traceCard.rows.slice(0, 3).map((r, i) => (
               <div key={i} className="pb-tel-row">
                 <span className="pb-tel-k">{r.k}</span>
                 <span className={`pb-tel-v ${r.tone ? `is-${r.tone}` : ''}`}>{r.v}</span>
@@ -236,7 +206,7 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
 
         {traceCard.signals && (
           <div className="pb-tel-rows">
-            {traceCard.signals.map((sig, i) => (
+            {traceCard.signals.slice(0, 3).map((sig, i) => (
               <div key={i} className="pb-tel-row">
                 <span className="pb-tel-k">{sig.label}</span>
                 <span className={`pb-tel-v ${sig.tone ? `is-${sig.tone}` : ''}`}>
@@ -272,10 +242,10 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
 
         <div
           className={`pb-stat-grid ${
-            traceCard.stats.length === 2 ? 'cols-2' : 'cols-3'
+            traceCard.stats.slice(0, 2).length === 2 ? 'cols-2' : 'cols-3'
           }`}
         >
-          {traceCard.stats.map((st, idx) => (
+          {traceCard.stats.slice(0, 2).map((st, idx) => (
             <div key={idx} className="pb-stat-box">
               <div className={`pb-stat-val ${st.tone ? `is-${st.tone}` : ''}`}>
                 {st.value}
@@ -284,8 +254,6 @@ export function ProteusBriefing3D({ onOpenWorkbench }: ProteusBriefing3DProps) {
             </div>
           ))}
         </div>
-
-        {traceCard.note && <p className="pb-tel-note">{traceCard.note}</p>}
       </aside>
 
       {/* Bottom Pill Control Bar */}

@@ -175,11 +175,6 @@ export function ProteusVoxelHero({
     >
       <div ref={mountRef} className="voxel-canvas" />
 
-      {/* Top Executive Eyebrow */}
-      <div className="voxel-top-bar">
-        <span className="voxel-kicker">PROTEUS INTELLIGENCE PLATFORM</span>
-      </div>
-
       {/* Dynamic Narrative Subtitle */}
       <div className="voxel-narrative" aria-live="polite">
         <p key={slideIndex} className="voxel-caption">

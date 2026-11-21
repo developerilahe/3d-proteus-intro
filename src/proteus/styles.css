@@ -4,22 +4,23 @@
  */
 
 #proteus-briefing {
-  --pb-void: #0d0d0d;
-  --pb-card: #101216;
-  --pb-inset: #0b0d10;
-  --pb-pill: #13161c;
-  --pb-border: #242934;
-  --pb-border-pill: #2d3340;
+  --pb-void: #131417;
+  --pb-card: rgba(19, 20, 23, 0.72);
+  --pb-inset: rgba(19, 20, 23, 0.56);
+  --pb-pill: rgba(19, 20, 23, 0.78);
+  --pb-border: rgba(255, 255, 255, 0.12);
+  --pb-border-pill: rgba(255, 255, 255, 0.16);
   --pb-text: #f3f5f8;
-  --pb-text-2: #a9b2c1;
-  --pb-muted: #7c8596;
-  --pb-amber: #e5a93c;
+  --pb-text-2: #b9c1d0;
+  --pb-muted: #8a93a6;
+  --pb-amber: #f7d152;
   --pb-rust: #e05252;
-  --pb-blue: #5b9bd5;
-  --pb-violet: #9b7ede;
+  --pb-blue: #0fbffa;
+  --pb-violet: #b169db;
+  --pb-green: #46cf71;
 
   --pb-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --pb-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --pb-mono: 'Source Code Pro', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   position: relative;
   width: 100%;
@@ -57,21 +58,47 @@
   transform: translateX(-50%);
   z-index: 20;
   width: min(620px, calc(100vw - 32px));
-  padding: 15px 22px;
-  background-color: var(--pb-card);
-  border: 1px solid var(--pb-border);
-  border-radius: 6px;
+  padding: 16px 24px;
+  background: radial-gradient(
+      closest-corner,
+      oklab(27.722% -0.00023 -0.01543 / 0.12) 10%,
+      oklab(27.722% -0.00023 -0.01543 / 0.74) 90%
+    ),
+    rgba(19, 20, 23, 0.72);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 20px;
   text-align: center;
+  pointer-events: none;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42);
+}
+
+#proteus-briefing .pb-header-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #b169db 15%, #f7d152 45%, #46cf71 70%, #0fbffa 95%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.75;
   pointer-events: none;
 }
 
 #proteus-briefing .pb-header-tag {
-  font-family: var(--pb-sans);
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--pb-muted);
-  letter-spacing: 0.02em;
-  margin-bottom: 4px;
+  font-family: var(--pb-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  background-image: linear-gradient(-45deg, #b169db 15%, #f7d152 45%, #46cf71 75%, #0fbffa 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 #proteus-briefing .pb-header-title {
@@ -102,12 +129,28 @@
   top: 0;
   z-index: 12;
   will-change: transform;
-  padding: 5px 9px;
-  background-color: var(--pb-pill);
-  border: 1px solid var(--pb-border-pill);
-  border-radius: 4px;
+  padding: 7px 11px;
+  background: rgba(19, 20, 23, 0.76);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 12px;
   pointer-events: none;
   white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+#proteus-briefing .pb-node-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #b169db 15%, #f7d152 45%, #46cf71 70%, #0fbffa 95%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 #proteus-briefing .pb-node-pill-title {
@@ -146,10 +189,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
-  background-color: var(--pb-card);
-  border: 1px solid #303746;
-  border-radius: 4px;
+  padding: 5px 10px;
+  background: rgba(19, 20, 23, 0.78);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
   font-family: var(--pb-mono);
   font-size: 10.5px;
   font-weight: 500;
@@ -167,7 +211,7 @@
 }
 
 #proteus-briefing .pb-packet-pill.is-drop {
-  border-color: #462629;
+  border-color: rgba(224, 82, 82, 0.45);
   color: var(--pb-text-2);
 }
 
@@ -185,10 +229,31 @@
   transform: translateY(-50%);
   z-index: 20;
   width: min(320px, calc(100vw - 44px));
-  padding: 15px 16px;
-  background-color: var(--pb-card);
-  border: 1px solid var(--pb-border);
-  border-radius: 6px;
+  padding: 18px 18px;
+  background: radial-gradient(
+      closest-corner,
+      oklab(27.722% -0.00023 -0.01543 / 0.12) 10%,
+      oklab(27.722% -0.00023 -0.01543 / 0.74) 90%
+    ),
+    rgba(19, 20, 23, 0.74);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.46);
+}
+
+#proteus-briefing .pb-telemetry-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #b169db 15%, #f7d152 45%, #46cf71 70%, #0fbffa 95%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.78;
+  pointer-events: none;
 }
 
 #proteus-briefing .pb-tel-head {
@@ -196,15 +261,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 #proteus-briefing .pb-tel-tag {
-  font-family: var(--pb-sans);
+  font-family: var(--pb-mono);
   font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--pb-amber);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background-image: linear-gradient(-45deg, #b169db 15%, #f7d152 45%, #46cf71 75%, #0fbffa 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 #proteus-briefing .pb-provenance {
@@ -213,17 +283,17 @@
   font-weight: 500;
   letter-spacing: 0.03em;
   color: var(--pb-muted);
-  padding: 2px 6px;
+  padding: 3px 8px;
   background-color: var(--pb-inset);
   border: 1px solid var(--pb-border);
-  border-radius: 3px;
+  border-radius: 8px;
   white-space: nowrap;
 }
 
 #proteus-briefing .pb-tel-title {
-  margin: 0 0 10px;
+  margin: 0 0 11px;
   font-family: var(--pb-sans);
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--pb-text);
@@ -305,23 +375,24 @@
 #proteus-briefing .pb-score-track {
   width: 100%;
   height: 4px;
-  background-color: #191d25;
+  background-color: rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   overflow: hidden;
 }
 
 #proteus-briefing .pb-score-fill {
   height: 100%;
-  background-color: var(--pb-amber);
+  background: linear-gradient(90deg, #b169db, #f7d152);
   border-radius: 2px;
 }
 
 #proteus-briefing .pb-score-fill.is-rust {
   background-color: var(--pb-rust);
+  background-image: none;
 }
 
 #proteus-briefing .pb-score-fill.is-blue {
-  background-color: var(--pb-blue);
+  background: linear-gradient(90deg, #46cf71, #0fbffa);
 }
 
 /* 2–3 Compact Visual Impact Stat Boxes */
@@ -344,8 +415,8 @@
 #proteus-briefing .pb-stat-box {
   padding: 8px 9px;
   background-color: var(--pb-inset);
-  border: 1px solid #1d222c;
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 
 #proteus-briefing .pb-stat-val {
@@ -387,7 +458,7 @@
 }
 
 /* =========================================================================
-   BOTTOM CONTROL PILL BAR
+   BOTTOM CONTROL BAR
    ========================================================================= */
 #proteus-briefing .pb-bottom-bar {
   position: absolute;
@@ -399,11 +470,27 @@
   align-items: center;
   gap: 8px;
   max-width: calc(100vw - 24px);
-  padding: 6px 10px;
-  background-color: var(--pb-card);
-  border: 1px solid var(--pb-border);
-  border-radius: 999px;
+  padding: 7px 12px;
+  background: rgba(19, 20, 23, 0.78);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 16px;
   overflow-x: auto;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
+#proteus-briefing .pb-bottom-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #b169db 15%, #f7d152 45%, #46cf71 70%, #0fbffa 95%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.72;
+  pointer-events: none;
 }
 
 #proteus-briefing .pb-ctrl-btn {
@@ -414,7 +501,7 @@
   padding: 6px 11px;
   background-color: transparent;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 10px;
   font-family: var(--pb-sans);
   font-size: 12.5px;
   font-weight: 500;
@@ -425,7 +512,7 @@
 }
 
 #proteus-briefing .pb-ctrl-btn:hover:not(:disabled) {
-  background-color: #181c23;
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--pb-text);
 }
 
@@ -435,7 +522,7 @@
 }
 
 #proteus-briefing .pb-ctrl-btn.is-primary {
-  background-color: #1a1e26;
+  background-color: rgba(255, 255, 255, 0.07);
   border-color: var(--pb-border-pill);
   color: var(--pb-text);
 }
@@ -459,18 +546,18 @@
   padding: 0;
   border: 0;
   border-radius: 2px;
-  background-color: #262b36;
+  background-color: rgba(255, 255, 255, 0.16);
   cursor: pointer;
   transition: background-color 140ms ease, width 140ms ease;
 }
 
 #proteus-briefing .pb-dash:hover {
-  background-color: #465063;
+  background-color: rgba(255, 255, 255, 0.36);
 }
 
 #proteus-briefing .pb-dash.is-active {
   width: 26px;
-  background-color: var(--pb-amber);
+  background: linear-gradient(90deg, #b169db, #f7d152, #46cf71);
 }
 
 #proteus-briefing .pb-step-counter {
@@ -496,7 +583,7 @@
   padding: 2px;
   background-color: var(--pb-inset);
   border: 1px solid var(--pb-border);
-  border-radius: 999px;
+  border-radius: 10px;
 }
 
 #proteus-briefing .pb-brand-btn {
@@ -504,7 +591,7 @@
   background: transparent;
   border: 0;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 8px;
   font-family: var(--pb-mono);
   font-size: 11px;
   font-weight: 500;
@@ -515,7 +602,7 @@
 }
 
 #proteus-briefing .pb-brand-btn.is-active {
-  background-color: #1b2029;
+  background-color: rgba(255, 255, 255, 0.12);
   color: var(--pb-text);
 }
 
@@ -525,9 +612,9 @@
   align-items: center;
   gap: 5px;
   padding: 6px 12px;
-  background-color: rgba(229, 169, 60, 0.14);
-  border: 1px solid rgba(229, 169, 60, 0.45);
-  border-radius: 999px;
+  background-color: rgba(177, 105, 219, 0.16);
+  border: 1px solid rgba(247, 209, 82, 0.5);
+  border-radius: 10px;
   font-family: var(--pb-mono);
   font-size: 11px;
   font-weight: 500;
@@ -538,9 +625,9 @@
 }
 
 #proteus-briefing .pb-launch-btn:hover {
-  background-color: rgba(229, 169, 60, 0.24);
+  background-color: rgba(247, 209, 82, 0.22);
   border-color: var(--pb-amber);
-  color: #f9d48b;
+  color: #ffffff;
 }
 
 #proteus-briefing button:focus-visible {

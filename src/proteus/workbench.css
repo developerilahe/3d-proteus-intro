@@ -1,24 +1,23 @@
-/* PROTEUS Threat Intelligence Suite — Scoped under #proteus-workbench */
+/* PROTEUS Domain Scanner & Dashboard — Scoped under #proteus-workbench */
 
 #proteus-workbench {
-  --bg: #0d0d0d;
-  --surface: #131316;
-  --surface-2: #191920;
-  --border: #2a2725;
-  --border-2: #3d3834;
-  --text: #f3f4f8;
-  --text-dim: #b6b6b6;
-  --text-mute: rgba(182, 182, 182, 0.56);
+  --bg: #07080A;
+  --surface: #101318;
+  --surface-2: #151921;
+  --border: #1E2430;
+  --border-2: #283040;
+  --text: #f3f5f8;
+  --text-dim: #a9b2c1;
+  --text-mute: #7c8596;
   --accent: #4246ce;
-  --accent-text: #7d82ff;
+  --accent-text: #8b90ff;
   --crit: #FF5A5A;
   --high: #FF9A3C;
   --watch: #FFC857;
   --low: #6DD98A;
 
-  --font-display: 'Poppins', system-ui, sans-serif;
-  --font-body: 'Poppins', system-ui, sans-serif;
-  --font-data: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-data: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   display: block;
   width: 100%;
@@ -28,7 +27,6 @@
   font-size: 14px;
   line-height: 1.5;
   border-top: 1px solid var(--border);
-  padding: 80px 5vw 96px;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -36,12 +34,6 @@
 #proteus-workbench *::before,
 #proteus-workbench *::after {
   box-sizing: border-box;
-}
-
-#proteus-workbench .wb-shell {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
 }
 
 #proteus-workbench button:focus-visible,
@@ -54,127 +46,279 @@
 }
 
 /* ============================================================
-   EXECUTIVE HEADER
+   INITIAL MINIMALIST LAUNCH STATE (CENTERED)
    ============================================================ */
-#proteus-workbench .wb-hero-head {
-  margin-bottom: 28px;
-}
-
-#proteus-workbench .wb-head-top {
+#proteus-workbench.is-launch {
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+  justify-content: center;
+  padding: 32px 20px;
+  background: #131417;
 }
 
-#proteus-workbench .wb-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--accent-text);
+#proteus-workbench .wb-launch-screen {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#proteus-workbench .wb-title {
-  margin: 0 0 8px;
-  font-size: clamp(2rem, 3.8vw, 3.2rem);
-  font-weight: 800;
-  line-height: 1.06;
-  letter-spacing: -0.03em;
-  color: var(--text);
+#proteus-workbench .wb-launch-card {
+  position: relative;
+  width: min(460px, 100%);
+  background: radial-gradient(
+      closest-corner,
+      oklab(27.722% -0.00023 -0.01543 / 0.14) 10%,
+      oklab(27.722% -0.00023 -0.01543 / 0.78) 90%
+    ),
+    rgba(19, 20, 23, 0.78);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 36px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45);
 }
 
-#proteus-workbench .wb-subtitle {
+#proteus-workbench .wb-launch-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #b169db 15%, #f7d152 45%, #46cf71 70%, #0fbffa 95%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+#proteus-workbench .wb-launch-title {
   margin: 0;
-  max-width: 580px;
-  font-size: 14.5px;
-  font-weight: 400;
-  color: var(--text-dim);
+  font-size: clamp(1.65rem, 3vw, 2.05rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  text-align: center;
 }
 
-#proteus-workbench .btn-back-3d {
-  background: transparent;
-  color: var(--text-dim);
-  border: 1px solid var(--border);
-  padding: 6px 12px;
-  font-family: var(--font-data);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
-}
-
-#proteus-workbench .btn-back-3d:hover {
-  background: var(--surface);
-  color: #ffffff;
-  border-color: var(--accent);
-}
-
-/* ============================================================
-   HERO SEARCH BAR & SUB-CONTROLS
-   ============================================================ */
-#proteus-workbench .wb-search-hero {
+#proteus-workbench .wb-launch-input-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 6px 6px 18px;
-  background: var(--surface);
+  gap: 10px;
+  padding: 0 14px;
+  background: var(--bg);
   border: 1px solid var(--border-2);
   border-radius: 8px;
-  margin-bottom: 12px;
   transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
-#proteus-workbench .wb-search-hero:focus-within {
+#proteus-workbench .wb-launch-input-wrap:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(66, 70, 206, 0.18);
+  box-shadow: 0 0 0 3px rgba(66, 70, 206, 0.2);
 }
 
-#proteus-workbench .wb-search-hero-icon {
+#proteus-workbench .wb-launch-icon {
   color: var(--text-mute);
   flex-shrink: 0;
 }
 
-#proteus-workbench .wb-search-hero #brand-input {
+#proteus-workbench .wb-launch-input-wrap #brand-input {
   flex: 1;
   min-width: 0;
   background: transparent;
   border: none;
   color: var(--text);
   font-family: var(--font-data);
-  font-size: 15px;
-  font-weight: 500;
-  padding: 10px 4px;
+  font-size: 14.5px;
+  padding: 13px 0;
   outline: none;
 }
 
-#proteus-workbench .wb-search-hero #brand-input::placeholder {
+#proteus-workbench .wb-launch-input-wrap #brand-input::placeholder {
   color: var(--text-mute);
-  font-weight: 400;
+}
+
+#proteus-workbench .wb-range-presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+#proteus-workbench .wb-range-btn {
+  padding: 9px 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+#proteus-workbench .wb-range-btn:hover {
+  border-color: var(--border-2);
+  color: var(--text);
+}
+
+#proteus-workbench .wb-range-btn.active {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+#proteus-workbench .wb-launch-submit {
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+#proteus-workbench .wb-launch-submit:hover:not(:disabled) {
+  background: #5559e0;
+}
+
+#proteus-workbench .wb-launch-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   FULL-SCREEN DASHBOARD (100vw)
+   ============================================================ */
+#proteus-workbench.is-dashboard {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+}
+
+#proteus-workbench .wb-dashboard-screen {
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  animation: wbExpandIn 0.24s ease-out;
+}
+
+@keyframes wbExpandIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Compact Top Bar */
+#proteus-workbench .wb-dash-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 18px;
+  height: 54px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#proteus-workbench .wb-dash-brand-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+#proteus-workbench .wb-dash-search-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+}
+
+#proteus-workbench .wb-dash-search-icon {
+  color: var(--text-mute);
+  flex-shrink: 0;
+}
+
+#proteus-workbench .wb-dash-search-form #brand-input {
+  width: 170px;
+  min-width: 100px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  padding: 5px 2px;
+  outline: none;
+}
+
+#proteus-workbench .wb-dash-range-select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-data);
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+#proteus-workbench .wb-btn-compact {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+#proteus-workbench .wb-btn-compact:hover:not(:disabled) {
+  background: #5559e0;
+}
+
+#proteus-workbench .wb-btn-compact:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 #proteus-workbench .wb-btn {
   background: var(--accent);
   color: #ffffff;
   border: none;
-  padding: 11px 24px;
-  font-family: var(--font-data);
-  font-size: 12px;
+  padding: 10px 18px;
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   cursor: pointer;
   border-radius: 6px;
   white-space: nowrap;
-  flex-shrink: 0;
   transition: background 0.15s ease, opacity 0.15s ease;
 }
 
@@ -182,25 +326,18 @@
   background: #5559e0;
 }
 
-#proteus-workbench .wb-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 #proteus-workbench .wb-btn-sm {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 7px 12px;
   background: var(--accent);
   color: #ffffff;
   border: none;
-  border-radius: 4px;
-  font-family: var(--font-data);
-  font-size: 11px;
+  border-radius: 5px;
+  font-family: var(--font-body);
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -209,111 +346,52 @@
   background: #5559e0;
 }
 
-#proteus-workbench .wb-subcontrols {
+#proteus-workbench .nav-links {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-  padding: 0 2px;
-}
-
-#proteus-workbench .wb-subcontrols-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-#proteus-workbench .subcontrol-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-mute);
-  margin-right: 4px;
-}
-
-#proteus-workbench .subcontrol-sep {
-  width: 1px;
-  height: 14px;
-  background: var(--border);
-}
-
-#proteus-workbench .preset-group {
-  display: inline-flex;
   align-items: center;
   gap: 4px;
+  overflow-x: auto;
 }
 
-#proteus-workbench .preset-btn {
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-dim);
-  padding: 4px 9px;
-  font-family: var(--font-data);
-  font-size: 11.5px;
-  font-weight: 500;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: color 0.14s ease, background 0.14s ease, border-color 0.14s ease;
-}
-
-#proteus-workbench .preset-btn:hover:not(:disabled) {
-  color: #ffffff;
-  background: var(--surface);
-}
-
-#proteus-workbench .preset-btn.active {
-  color: #ffffff;
-  background: var(--surface-2);
-  border-color: var(--border-2);
-}
-
-#proteus-workbench .preset-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-#proteus-workbench .pass-segment {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 2px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-}
-
-#proteus-workbench .pass-seg-btn {
+#proteus-workbench .nav-links button.nav-tab {
   background: transparent;
   border: none;
   color: var(--text-mute);
-  padding: 4px 10px;
-  font-family: var(--font-data);
-  font-size: 11px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
   font-weight: 500;
-  border-radius: 3px;
+  padding: 16px 12px;
   cursor: pointer;
-  transition: color 0.14s ease, background 0.14s ease;
+  white-space: nowrap;
+  transition: color 0.15s ease, box-shadow 0.15s ease;
 }
 
-#proteus-workbench .pass-seg-btn:hover {
+#proteus-workbench .nav-links button.nav-tab:hover {
   color: var(--text);
 }
 
-#proteus-workbench .pass-seg-btn.active {
-  background: var(--accent);
+#proteus-workbench .nav-links button.nav-tab.active {
   color: #ffffff;
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+#proteus-workbench .wb-dash-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 #proteus-workbench .toggle-switch {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   font-size: 12px;
   color: var(--text-dim);
   cursor: pointer;
   user-select: none;
+  margin-right: 4px;
 }
 
 #proteus-workbench .toggle-switch input {
@@ -321,29 +399,27 @@
   cursor: pointer;
 }
 
-#proteus-workbench .export-controls {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-#proteus-workbench .btn-outline {
+#proteus-workbench .btn-outline,
+#proteus-workbench .btn-back-3d {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   background: transparent;
   color: var(--text-dim);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-2);
   padding: 5px 10px;
   font-family: var(--font-data);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 5px;
+  white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-#proteus-workbench .btn-outline:hover:not(:disabled) {
-  background: var(--surface);
+#proteus-workbench .btn-outline:hover:not(:disabled),
+#proteus-workbench .btn-back-3d:hover {
+  background: var(--surface-2);
   color: #ffffff;
   border-color: var(--accent);
 }
@@ -353,12 +429,12 @@
   cursor: not-allowed;
 }
 
+/* Progress Bar */
 #proteus-workbench .scan-progress {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  margin-bottom: 18px;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  flex-shrink: 0;
 }
 
 #proteus-workbench .scan-progress-meta {
@@ -366,16 +442,16 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  font-size: 11px;
+  font-size: 11.5px;
   font-variant-numeric: tabular-nums;
   color: var(--text-dim);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 #proteus-workbench .scan-progress-track {
   width: 100%;
   height: 3px;
-  background: var(--surface-2);
+  background: var(--bg);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -387,125 +463,10 @@
 }
 
 /* ============================================================
-   QUIET 4-METRIC HAIRLINE STRIP (NO HEAVY CARDS)
+   WORKSPACE BODY & SPLIT LAYOUT
    ============================================================ */
-#proteus-workbench .kpi-bar {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 24px;
-}
-
-#proteus-workbench .kpi-box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 16px 22px 16px 0;
-  margin-right: 22px;
-  border-right: 1px solid var(--border);
-}
-
-#proteus-workbench .kpi-box:last-child {
-  border-right: none;
-  margin-right: 0;
-}
-
-#proteus-workbench .kpi-label {
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-mute);
-  margin-bottom: 4px;
-  white-space: nowrap;
-}
-
-#proteus-workbench .kpi-value {
-  font-size: 24px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--text);
-  white-space: nowrap;
-  line-height: 1.15;
-}
-
-#proteus-workbench .kpi-value-sub {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-dim);
-}
-
-#proteus-workbench .kpi-value.kpi-target {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--accent-text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ============================================================
-   UNIFIED WORKSPACE FRAME & TOPBAR
-   ============================================================ */
-#proteus-workbench .wb-frame {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-#proteus-workbench .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 0 22px;
-  height: 50px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  flex-shrink: 0;
-}
-
-#proteus-workbench .nav-links {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-}
-
-#proteus-workbench .nav-links button.nav-tab {
-  background: transparent;
-  border: none;
-  color: var(--text-mute);
-  font-family: var(--font-data);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 15px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 0.16s ease, box-shadow 0.16s ease;
-}
-
-#proteus-workbench .nav-links button.nav-tab:hover {
-  color: var(--text);
-}
-
-#proteus-workbench .nav-links button.nav-tab.active {
-  color: #ffffff;
-  box-shadow: inset 0 -2px 0 var(--accent);
-}
-
-#proteus-workbench .topbar-status {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-mute);
-  white-space: nowrap;
-}
-
 #proteus-workbench .wb-container {
-  height: 680px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -536,13 +497,10 @@
 
 #proteus-workbench .view-subhead {
   margin: 0 0 22px;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text-dim);
 }
 
-/* ============================================================
-   TRIAGE SPLIT LAYOUT
-   ============================================================ */
 #proteus-workbench .split-layout {
   display: flex;
   flex: 1;
@@ -550,9 +508,12 @@
   min-height: 0;
 }
 
+/* ============================================================
+   LEFT DOMAIN LIST + SINGLE FILTER ICON POPOVER
+   ============================================================ */
 #proteus-workbench .list-pane {
-  width: 390px;
-  min-width: 330px;
+  width: 350px;
+  min-width: 290px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -561,93 +522,108 @@
   background: var(--bg);
 }
 
-#proteus-workbench .dossier-pane {
-  flex: 1;
-  overflow-y: auto;
-  background: var(--bg);
-  padding: 0;
-}
-
-/* Clean flat underline filter tabs */
-#proteus-workbench .filter-bar {
-  display: flex;
-  gap: 2px;
-  padding: 0 14px;
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  flex-shrink: 0;
-}
-
-#proteus-workbench .filter-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 11px 8px;
-  font-family: var(--font-data);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-mute);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 0.14s ease, border-color 0.14s ease;
-}
-
-#proteus-workbench .filter-tab:hover {
-  color: var(--text);
-}
-
-#proteus-workbench .filter-tab.active {
-  color: #ffffff;
-  border-bottom-color: var(--accent);
-}
-
-#proteus-workbench .filter-tab-count {
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-  opacity: 0.7;
-}
-
-#proteus-workbench .search-bar {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-#proteus-workbench .search-input-wrap {
+#proteus-workbench .list-pane-header {
   position: relative;
   display: flex;
   align-items: center;
-}
-
-#proteus-workbench input[type="text"],
-#proteus-workbench select {
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
   background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  font-family: var(--font-data);
-  font-size: 12.5px;
-  border-radius: 5px;
-  outline: none;
-  transition: border-color 0.15s ease;
+  flex-shrink: 0;
 }
 
-#proteus-workbench input[type="text"]:focus,
-#proteus-workbench select:focus {
+#proteus-workbench .list-pane-title-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+#proteus-workbench .list-pane-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#proteus-workbench .list-pane-count {
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-mute);
+}
+
+#proteus-workbench .filter-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+
+#proteus-workbench .filter-icon-btn:hover {
+  color: #ffffff;
   border-color: var(--accent);
 }
 
-#proteus-workbench .search-bar input {
+#proteus-workbench .filter-icon-btn.is-filtered {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: rgba(66, 70, 206, 0.14);
+}
+
+#proteus-workbench .filter-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 12px;
+  z-index: 40;
+  width: 260px;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#proteus-workbench .filter-popover-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 0 8px;
+}
+
+#proteus-workbench .filter-pop-icon {
+  color: var(--text-mute);
+  flex-shrink: 0;
+}
+
+#proteus-workbench .filter-popover-search input {
   width: 100%;
-  padding-right: 30px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: 12px;
+  padding: 8px 24px 8px 8px;
+  outline: none;
 }
 
 #proteus-workbench .search-clear-btn {
   position: absolute;
-  right: 8px;
+  right: 6px;
   background: transparent;
   border: none;
   color: var(--text-mute);
@@ -656,11 +632,48 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 3px;
 }
 
-#proteus-workbench .search-clear-btn:hover {
+#proteus-workbench .filter-popover-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#proteus-workbench .filter-pop-opt {
+  text-align: left;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+#proteus-workbench .filter-pop-opt:hover {
+  background: var(--surface);
   color: var(--text);
+}
+
+#proteus-workbench .filter-pop-opt.active {
+  background: rgba(66, 70, 206, 0.18);
+  border-color: rgba(66, 70, 206, 0.45);
+  color: #ffffff;
+}
+
+#proteus-workbench .filter-pop-reset {
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  padding: 8px 4px 2px;
+  font-size: 11.5px;
+  color: var(--accent-text);
+  text-align: left;
+  cursor: pointer;
 }
 
 #proteus-workbench #findings-list {
@@ -670,9 +683,7 @@
   outline: none;
 }
 
-/* ============================================================
-   CLEAN 2-LINE FINDING ROWS
-   ============================================================ */
+/* Finding Rows */
 #proteus-workbench .finding-row {
   display: flex;
   justify-content: space-between;
@@ -697,13 +708,14 @@
 #proteus-workbench .f-row-left {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   flex: 1;
 }
 
 #proteus-workbench .f-domain {
-  font-size: 13.5px;
+  font-family: var(--font-data);
+  font-size: 13px;
   font-weight: 500;
   color: var(--text);
   word-break: break-all;
@@ -723,8 +735,8 @@
 #proteus-workbench .f-subrow {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 11px;
+  gap: 6px;
+  font-size: 11.5px;
   color: var(--text-mute);
   white-space: nowrap;
   overflow: hidden;
@@ -732,69 +744,32 @@
 }
 
 #proteus-workbench .f-status-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
   color: var(--text-dim);
-  font-size: 10.5px;
   font-weight: 500;
 }
 
-#proteus-workbench .status-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-#proteus-workbench .status-dot.dot-live { background: var(--crit); }
-#proteus-workbench .status-dot.dot-drift { background: var(--watch); }
-#proteus-workbench .status-dot.dot-precrime { background: var(--accent-text); }
-#proteus-workbench .status-dot.dot-mute { background: rgba(182, 182, 182, 0.35); }
-
 #proteus-workbench .sub-label {
+  font-family: var(--font-data);
+  font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 #proteus-workbench .f-score {
-  font-size: 18px;
-  font-weight: 700;
+  font-family: var(--font-data);
+  font-size: 16px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--text);
-  min-width: 34px;
+  color: var(--text-dim);
+  min-width: 30px;
   text-align: right;
   flex-shrink: 0;
 }
 
-#proteus-workbench .finding-row.tier-CRITICAL .f-score { color: var(--crit); }
+#proteus-workbench .finding-row.tier-SAFE .f-score { color: var(--low); }
+#proteus-workbench .finding-row.tier-WATCH .f-score { color: var(--watch); }
 #proteus-workbench .finding-row.tier-HIGH .f-score { color: var(--high); }
-
-#proteus-workbench .badge {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 3px;
-  border: 1px solid var(--border-2);
-  color: var(--text-dim);
-  white-space: nowrap;
-}
-
-#proteus-workbench .badge.drift {
-  color: var(--watch);
-  border-color: rgba(255, 200, 87, 0.45);
-  background: rgba(255, 200, 87, 0.08);
-}
-
-#proteus-workbench .badge.precrime {
-  background: rgba(66, 70, 206, 0.18);
-  color: var(--accent-text);
-  border-color: rgba(125, 130, 255, 0.45);
-}
+#proteus-workbench .finding-row.tier-CRITICAL .f-score { color: var(--crit); }
 
 #proteus-workbench .empty-state {
   padding: 56px 24px;
@@ -804,11 +779,22 @@
 }
 
 /* ============================================================
-   DOSSIER PANE
+   RIGHT INSPECTOR PANE (DOSSIER)
    ============================================================ */
+#proteus-workbench .dossier-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  min-width: 0;
+}
+
 #proteus-workbench .dossier-header {
-  padding: 24px 32px 20px;
+  padding: 20px 28px 16px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
 }
 
 #proteus-workbench .dossier-top-row {
@@ -833,8 +819,9 @@
 
 #proteus-workbench .dossier-domain {
   margin: 0;
-  font-size: 23px;
-  font-weight: 700;
+  font-family: var(--font-data);
+  font-size: 21px;
+  font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text);
   word-break: break-all;
@@ -844,13 +831,13 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px;
+  padding: 4px 8px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text-dim);
-  font-family: var(--font-data);
-  font-size: 10.5px;
+  font-family: var(--font-body);
+  font-size: 11px;
   cursor: pointer;
   transition: color 0.14s, border-color 0.14s;
 }
@@ -865,9 +852,14 @@
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
-  font-size: 12px;
-  color: var(--text-mute);
-  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+#proteus-workbench .dossier-ip-val {
+  font-family: var(--font-data);
+  font-weight: 500;
+  color: var(--text);
 }
 
 #proteus-workbench .dossier-score-col {
@@ -876,7 +868,8 @@
 }
 
 #proteus-workbench .dossier-score {
-  font-size: 36px;
+  font-family: var(--font-data);
+  font-size: 32px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -884,19 +877,16 @@
 }
 
 #proteus-workbench .dossier-score-denom {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-mute);
   margin-left: 2px;
 }
 
 #proteus-workbench .dossier-tier-line {
-  margin-top: 5px;
-  font-size: 10px;
+  margin-top: 4px;
+  font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--text-mute);
-  text-transform: uppercase;
 }
 
 #proteus-workbench .dossier-context-row {
@@ -905,23 +895,14 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
 }
 
-#proteus-workbench .dossier-context-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  font-size: 12px;
+#proteus-workbench .dossier-context-note {
+  font-size: 12.5px;
   color: var(--text-dim);
-  font-variant-numeric: tabular-nums;
-}
-
-#proteus-workbench .dossier-tech-name {
-  font-weight: 600;
-  color: var(--accent-text);
 }
 
 #proteus-workbench .dossier-action-group {
@@ -934,16 +915,14 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 11px;
+  padding: 6px 12px;
   background: transparent;
   border: 1px solid var(--border-2);
-  border-radius: 4px;
+  border-radius: 5px;
   color: var(--text-dim);
-  font-family: var(--font-data);
-  font-size: 11px;
+  font-family: var(--font-body);
+  font-size: 12px;
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   cursor: pointer;
   transition: color 0.14s, border-color 0.14s, background 0.14s;
 }
@@ -959,16 +938,16 @@
   gap: 6px;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
-  padding: 0 32px;
+  padding: 0 28px;
   overflow-x: auto;
   flex-shrink: 0;
 }
 
 #proteus-workbench .dossier-tab {
-  font-family: var(--font-data);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 13px 12px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 12px 12px;
   color: var(--text-mute);
   cursor: pointer;
   border: none;
@@ -984,111 +963,410 @@
 
 #proteus-workbench .dossier-tab.active {
   color: #ffffff;
+  font-weight: 600;
   border-bottom-color: var(--accent);
 }
 
 #proteus-workbench .dossier-content {
-  padding: 26px 32px 34px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: clip;
+  min-height: 0;
+  padding: 24px 28px 40px;
 }
 
+#proteus-workbench .dossier-content.is-story-mode {
+  background: #131417;
+  padding: 20px 16px 48px;
+  overscroll-behavior: none;
+}
+
+/* ============================================================
+   EXACT CODEPEN-STYLE 4-CARD + 3D TABLET + SVG RIBBONS STAGE
+   ============================================================ */
+#proteus-workbench .cp-main {
+  --strokeDashoffset: 0;
+  --tabletVerticaloffset: 0px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 740px;
+  height: 2000px;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+  overscroll-behavior: none;
+}
+
+#proteus-workbench .cp-cards {
+  display: block;
+  width: 300px;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}
+
+@media (min-width: 576px) {
+  #proteus-workbench .cp-cards {
+    transform: translateX(4vw);
+  }
+}
+
+#proteus-workbench .cp-card-wrapper {
+  display: block;
+  position: relative;
+  width: 300px;
+  height: 450px;
+  border-radius: 20px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  overflow: clip;
+}
+
+@media (min-width: 576px) {
+  #proteus-workbench .cp-card-wrapper:nth-child(odd) {
+    transform: translateX(6vw);
+  }
+}
+
+#proteus-workbench .cp-card-wrapper::before {
+  position: absolute;
+  content: " ";
+  display: block;
+  z-index: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: inherit;
+  background-color: rgba(0, 0, 0, 0.27);
+  backdrop-filter: blur(8px);
+}
+
+#proteus-workbench .cp-card-wrapper::after {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  content: " ";
+  display: block;
+  width: inherit;
+  height: 450px;
+  border-radius: 20px;
+  pointer-events: none;
+  background-image: url('data:image/svg+xml,<svg width="300" height="450" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cl2" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(45)"><stop offset="20%" stop-color="%23b169db"/><stop offset="45%" stop-color="%23f7d152"/><stop offset="65%" stop-color="%2346cf71"/><stop offset="85%" stop-color="%230fbffa"/></linearGradient></defs><path fill="url(%23cl2)" stroke="none" d="M 20,0C 9,0 0,9 0,20v 410c 0,11 9,20 20,20h 130 130c 11,0 20,-9 20,-20V 20C 300,9 291,0 280,0Zm 1,1h 161l 95,2c 12,1 19,10 19,20L 299,175v 254c 0,11 -9,20 -20,20H 118l -95,-3c -10,0 -20,-8 -20,-20L 1,275V 22C 1,11 10,1 21,1Z" /></svg>');
+  filter: blur(1px) saturate(1.2) brightness(1.2);
+  opacity: 0.85;
+}
+
+#proteus-workbench .cp-card {
+  display: block;
+  width: 300px;
+  height: 450px;
+  border-radius: 20px;
+  background-color: oklab(27.722% -0.00023 -0.01543 / 0.733);
+  background: radial-gradient(
+      closest-corner,
+      oklab(27.722% -0.00023 -0.01543 / 0.067) 10%,
+      oklab(27.722% -0.00023 -0.01543 / 0.733) 90%
+    ),
+    linear-gradient(
+      50deg,
+      oklab(74.255% -0.1471 0.04911 / 0.133) 0%,
+      transparent 25%,
+      transparent 75%,
+      oklab(66.807% 0.13215 -0.11718 / 0.133) 100%
+    );
+  color: #ffffff;
+  position: relative;
+}
+
+#proteus-workbench .cp-card.cp-card-hero {
+  background: oklab(50.301% -0.00032 -0.00343 / 0.4);
+  background: radial-gradient(
+      closest-corner,
+      oklab(50.301% -0.00032 -0.00343 / 0.047) 10%,
+      oklab(50.301% -0.00032 -0.00343 / 0.4) 90%
+    ),
+    linear-gradient(
+      50deg,
+      oklab(74.255% -0.1471 0.04911 / 0.07) 0%,
+      transparent 25%,
+      transparent 75%,
+      oklab(66.807% 0.13215 -0.11718 / 0.133) 100%
+    );
+}
+
+#proteus-workbench .cp-card::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: block;
+  content: "";
+  width: 300px;
+  height: 450px;
+  border-radius: 20px;
+  background: linear-gradient(-45deg, #912acd 20%, #e6b71d, #16a242, #03b0ea 70%);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+#proteus-workbench .cp-card-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 26px 24px;
+  text-align: left;
+}
+
+#proteus-workbench .cp-card-eyebrow {
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  background-image: linear-gradient(-45deg, #b169db 15%, #f7d152 45%, #46cf71 75%, #0fbffa 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+#proteus-workbench .cp-card-heading {
+  margin: 0 0 12px;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+#proteus-workbench .cp-hero-lead {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #f3f5f8;
+}
+
+#proteus-workbench .cp-hero-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 14px;
+}
+
+#proteus-workbench .cp-fact-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+}
+
+#proteus-workbench .cp-fact-k {
+  color: var(--text-mute);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#proteus-workbench .cp-fact-v {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #f3f5f8;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#proteus-workbench .cp-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#proteus-workbench .cp-plain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#proteus-workbench .cp-plain-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 11px;
+  background: rgba(19, 20, 23, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+#proteus-workbench .cp-plain-title {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #f3f5f8;
+  line-height: 1.35;
+}
+
+#proteus-workbench .cp-plain-sub {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--text-mute);
+  line-height: 1.35;
+}
+
+#proteus-workbench .cp-plain-empty,
+#proteus-workbench .cp-plain-copy {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
+#proteus-workbench .cp-card-cta {
+  margin-top: 16px;
+}
+
+#proteus-workbench .cp-world3d {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  transform: translateY(var(--tabletVerticaloffset, 0px));
+  z-index: 1;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+  overflow: visible;
+  width: 90%;
+  max-width: 1100px;
+  padding-top: 24px;
+  pointer-events: none;
+}
+
+#proteus-workbench .cp-tablet {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  transform-origin: 0% 50%;
+  -webkit-transform: rotateY(20deg);
+  transform: rotateY(20deg);
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 110vh;
+  padding: 40px 40px 40px 140px;
+  background-color: oklab(23.86% 0.00399 -0.01472);
+  background: linear-gradient(
+    109.61deg,
+    oklab(35.777% 0.00155 -0.01572) 4.26%,
+    oklab(17.28% -0.00043 -0.00445) 84.84%
+  );
+  border-radius: 30px;
+  opacity: 0.25;
+}
+
+#proteus-workbench .cp-tablet::before {
+  position: absolute;
+  left: 120px;
+  top: 20px;
+  right: 20px;
+  bottom: 20px;
+  content: "";
+  display: block;
+  background-color: #131417;
+  border: thin solid #565a6488;
+  border-radius: 20px;
+}
+
+#proteus-workbench #cp-svgPaths {
+  position: absolute;
+  top: 75px;
+  z-index: 5;
+  width: 740px;
+  max-width: 100%;
+  overflow-x: clip;
+  height: 2000px;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+@media (min-width: 576px) {
+  #proteus-workbench #cp-svgPaths {
+    -webkit-transform: translateX(6vw);
+    transform: translateX(6vw);
+  }
+}
+
+#proteus-workbench #cp-svgPaths use {
+  fill: none;
+  stroke: url(#cp-cl1);
+  stroke-linecap: round;
+  stroke-width: var(--dot);
+  stroke-dashoffset: var(--strokeDashoffset);
+  transition: stroke-dashoffset 80ms linear;
+}
+
+#proteus-workbench #cp-svgPaths use.cp-path-01 {
+  --dot: 20px;
+  --gap: 50px;
+  stroke-dasharray: var(--dot) var(--gap) 120px var(--gap) var(--dot) var(--gap) 300px var(--gap) var(--dot) var(--gap) 150px var(--gap) var(--dot) 20000px;
+}
+
+#proteus-workbench #cp-svgPaths use.cp-path-02 {
+  --dot: 34px;
+  --gap: 60px;
+  stroke-dasharray: var(--dot) var(--gap) 120px var(--gap) var(--dot) var(--gap) 300px var(--gap) var(--dot) var(--gap) 150px var(--gap) var(--dot) 20000px;
+}
+
+#proteus-workbench #cp-svgPaths use.cp-path-03 {
+  --dot: 25px;
+  --gap: 40px;
+  stroke-dasharray: var(--dot) var(--gap) 120px var(--gap) var(--dot) var(--gap) 250px var(--gap) var(--dot) var(--gap) 150px var(--gap) var(--dot) 20000px;
+}
+
+#proteus-workbench #cp-svgPaths use.cp-path-04 {
+  --dot: 40px;
+  --gap: 70px;
+  stroke-dasharray: var(--dot) var(--gap) 100px var(--gap) var(--dot) var(--gap) 200px var(--gap) var(--dot) 20000px;
+}
+
+/* ============================================================
+   OTHER DOSSIER TABS & SHARED DATA BLOCKS
+   ============================================================ */
 #proteus-workbench .dossier-stack {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 24px;
 }
 
 #proteus-workbench .section-title {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   color: var(--text-mute);
   margin: 0 0 12px 0;
-}
-
-#proteus-workbench .score-breakdown-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 14px 16px;
-  border-radius: 6px;
-}
-
-#proteus-workbench .score-stack-bar {
-  display: flex;
-  width: 100%;
-  height: 7px;
-  background: var(--bg);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-#proteus-workbench .score-seg {
-  height: 100%;
-  transition: width 180ms ease;
-}
-
-#proteus-workbench .seg-tech { background: #4246ce; }
-#proteus-workbench .seg-sim { background: #5B9BD5; }
-#proteus-workbench .seg-lure { background: #FFC857; }
-#proteus-workbench .seg-infra { background: #FF5A5A; }
-
-#proteus-workbench .score-legend-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 11.5px;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-dim);
-}
-
-#proteus-workbench .score-legend-row span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-#proteus-workbench .score-legend-row .dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-}
-
-#proteus-workbench .clean-kv-list {
-  border-top: 1px solid var(--border);
-}
-
-#proteus-workbench .signal-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-
-#proteus-workbench .signal-text {
-  color: var(--text-dim);
-}
-
-#proteus-workbench .evidence {
-  color: var(--text-mute);
-  font-size: 12px;
-}
-
-#proteus-workbench .signal-pts {
-  color: var(--accent-text);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 #proteus-workbench .data-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
 #proteus-workbench .data-block {
@@ -1108,8 +1386,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 6px 0;
-  font-size: 12px;
-  border-bottom: 1px solid rgba(42, 39, 37, 0.7);
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--border);
 }
 
 #proteus-workbench .data-row:last-child {
@@ -1118,46 +1396,9 @@
 
 #proteus-workbench .data-label {
   color: var(--text-mute);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
   white-space: nowrap;
   flex-shrink: 0;
-}
-
-#proteus-workbench .timeline {
-  border-top: 1px solid var(--border);
-}
-
-#proteus-workbench .timeline-item {
-  display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 16px;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-}
-
-#proteus-workbench .timeline-date {
-  color: var(--text-mute);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-#proteus-workbench .timeline-event {
-  color: var(--text-dim);
-}
-
-#proteus-workbench .timeline-kind {
-  display: inline-block;
-  font-size: 9.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--accent-text);
-  border: 1px solid rgba(125, 130, 255, 0.35);
-  padding: 1px 6px;
-  border-radius: 3px;
-  margin-right: 8px;
-  letter-spacing: 0.05em;
 }
 
 #proteus-workbench .dna-phrases-row {
@@ -1166,7 +1407,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--text-dim);
 }
 
@@ -1180,11 +1421,11 @@
 
 #proteus-workbench .drift-step-label {
   color: var(--text-mute);
-  margin-bottom: 5px;
-  font-size: 10.5px;
+  margin-bottom: 4px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.07em;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 #proteus-workbench .drift-step-val {
@@ -1199,10 +1440,10 @@
 }
 
 #proteus-workbench .quiet-empty-box {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--text-mute);
   padding: 16px;
-  border: 1px dashed var(--border);
+  border: 1px dashed var(--border-2);
   border-radius: 6px;
 }
 
@@ -1214,7 +1455,7 @@
 }
 
 /* ============================================================
-   WORLD THREAT MAP (SIDE-BY-SIDE D3 CARTOGRAPHY + INSPECTOR)
+   WORLD THREAT MAP
    ============================================================ */
 #proteus-workbench .map-tabs {
   display: flex;
@@ -1225,10 +1466,10 @@
 }
 
 #proteus-workbench .map-tab {
-  font-family: var(--font-data);
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 13px 14px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 12px 14px;
   color: var(--text-mute);
   cursor: pointer;
   background: transparent;
@@ -1243,6 +1484,7 @@
 
 #proteus-workbench .map-tab.active {
   color: #ffffff;
+  font-weight: 600;
   border-bottom-color: var(--accent);
 }
 
@@ -1287,7 +1529,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0a0b0f;
+  background: #090b10;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px;
@@ -1297,17 +1539,12 @@
 #proteus-workbench #world-svg {
   width: 100%;
   height: 100%;
-  max-height: 500px;
+  max-height: 520px;
   display: block;
 }
 
 #proteus-workbench .pin {
   cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-#proteus-workbench .pin:hover {
-  opacity: 0.9;
 }
 
 #proteus-workbench .pin-label {
@@ -1327,7 +1564,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text-dim);
   flex-shrink: 0;
 }
@@ -1346,6 +1583,7 @@
 
 #proteus-workbench .legend-summary {
   margin-left: auto;
+  font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
   color: var(--text-mute);
 }
@@ -1381,10 +1619,10 @@
 
 #proteus-workbench .geo-section-kicker {
   display: block;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   color: var(--text-mute);
   margin-bottom: 6px;
 }
@@ -1394,6 +1632,7 @@
 }
 
 #proteus-workbench .geo-regions-count {
+  font-family: var(--font-data);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   color: var(--text-dim);
@@ -1416,7 +1655,6 @@
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: background 0.14s ease;
 }
 
 #proteus-workbench .geo-region-row:hover {
@@ -1473,11 +1711,12 @@
   flex-direction: column;
   align-items: flex-end;
   flex-shrink: 0;
+  font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
 }
 
 #proteus-workbench .geo-region-count {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--text);
 }
@@ -1499,21 +1738,17 @@
   background: transparent;
   border: none;
   padding: 0;
-  font-family: var(--font-data);
-  font-size: 11.5px;
+  font-family: var(--font-body);
+  font-size: 12px;
   font-weight: 600;
   color: var(--accent-text);
   cursor: pointer;
 }
 
-#proteus-workbench .geo-back-btn:hover {
-  text-decoration: underline;
-}
-
 #proteus-workbench .geo-code-chip {
+  font-family: var(--font-data);
   font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 600;
   padding: 2px 7px;
   border-radius: 3px;
   background: var(--surface-2);
@@ -1523,10 +1758,9 @@
 
 #proteus-workbench .geo-country-title {
   margin: 0 0 14px;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text);
-  letter-spacing: -0.02em;
 }
 
 #proteus-workbench .geo-country-metrics {
@@ -1541,15 +1775,15 @@
 
 #proteus-workbench .geo-metric-label {
   display: block;
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--text-mute);
   margin-bottom: 2px;
 }
 
 #proteus-workbench .geo-metric-val {
+  font-family: var(--font-data);
   font-size: 20px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -1565,11 +1799,6 @@
   font-size: 12px;
   color: var(--text-dim);
   line-height: 1.45;
-}
-
-#proteus-workbench .geo-domains-block {
-  flex: 1;
-  min-height: 0;
 }
 
 #proteus-workbench .geo-domain-list {
@@ -1593,7 +1822,11 @@
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.14s ease, color 0.14s ease;
+}
+
+#proteus-workbench .geo-domain-link:hover {
+  border-color: var(--accent);
+  color: #ffffff;
 }
 
 #proteus-workbench .geo-domain-name {
@@ -1602,22 +1835,8 @@
   white-space: nowrap;
 }
 
-#proteus-workbench .geo-domain-arrow {
-  color: var(--text-mute);
-  flex-shrink: 0;
-}
-
-#proteus-workbench .geo-domain-link:hover {
-  border-color: var(--accent);
-  color: #ffffff;
-}
-
-#proteus-workbench .geo-domain-link:hover .geo-domain-arrow {
-  color: var(--accent-text);
-}
-
 /* ============================================================
-   CLUSTERS, MATRIX & OSINT
+   CLUSTERS, TABLES, OSINT & MODALS
    ============================================================ */
 #proteus-workbench #map-clusters {
   padding: 24px;
@@ -1626,7 +1845,7 @@
 #proteus-workbench .clusters-grid,
 #proteus-workbench .matrix-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
 }
 
@@ -1652,7 +1871,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 #proteus-workbench .cluster-header {
@@ -1666,40 +1885,33 @@
 }
 
 #proteus-workbench .cluster-ip {
-  font-size: 15px;
-  font-weight: 700;
+  font-family: var(--font-data);
+  font-size: 14.5px;
+  font-weight: 600;
   color: var(--accent-text);
   margin-bottom: 4px;
 }
 
 #proteus-workbench .cluster-meta {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text-mute);
 }
 
 #proteus-workbench .cluster-conf {
-  font-size: 13px;
+  font-family: var(--font-data);
+  font-size: 12px;
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--watch);
-  text-align: right;
-  line-height: 1.2;
-}
-
-#proteus-workbench .cluster-count-line {
-  font-size: 11px;
-  color: var(--text-mute);
-  text-transform: uppercase;
-  margin-bottom: 8px;
+  color: var(--text-dim);
 }
 
 #proteus-workbench .cluster-member {
   display: flex;
   justify-content: space-between;
   gap: 12px;
+  font-family: var(--font-data);
   font-size: 12px;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(42, 39, 37, 0.7);
+  border-bottom: 1px solid var(--border);
   word-break: break-all;
 }
 
@@ -1712,7 +1924,6 @@
   text-align: left;
   color: var(--text);
   cursor: pointer;
-  transition: color 0.14s;
 }
 
 #proteus-workbench .cluster-member-btn:hover {
@@ -1727,9 +1938,8 @@
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid var(--border);
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text-mute);
-  line-height: 1.45;
 }
 
 #proteus-workbench .matrix-domain-links {
@@ -1749,18 +1959,16 @@
   font-size: 11.5px;
   color: var(--text);
   cursor: pointer;
-  transition: border-color 0.14s, color 0.14s;
 }
 
 #proteus-workbench .matrix-domain-chip:hover {
   border-color: var(--accent);
-  color: #ffffff;
 }
 
 #proteus-workbench .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 12.5px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1770,10 +1978,9 @@
   border-bottom: 1px solid var(--border);
   color: var(--text-mute);
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 10.5px;
   letter-spacing: 0.06em;
   font-weight: 600;
-  white-space: nowrap;
 }
 
 #proteus-workbench .data-table td {
@@ -1783,10 +1990,6 @@
   word-break: break-all;
 }
 
-#proteus-workbench .data-table tbody tr:hover {
-  background: var(--surface);
-}
-
 #proteus-workbench .history-head-row {
   display: flex;
   justify-content: space-between;
@@ -1794,6 +1997,29 @@
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 24px;
+}
+
+#proteus-workbench .badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-2);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+#proteus-workbench .badge.drift {
+  color: var(--watch);
+  border-color: rgba(255, 200, 87, 0.45);
+  background: rgba(255, 200, 87, 0.08);
+}
+
+#proteus-workbench .badge.precrime {
+  background: rgba(66, 70, 206, 0.18);
+  color: var(--accent-text);
+  border-color: rgba(125, 130, 255, 0.45);
 }
 
 #proteus-workbench .news-card {
@@ -1819,26 +2045,9 @@
 }
 
 #proteus-workbench .news-type {
-  font-size: 10px;
+  font-size: 10.5px;
   text-transform: uppercase;
   color: var(--text-mute);
-  letter-spacing: 0.06em;
-}
-
-#proteus-workbench .news-badge {
-  font-size: 9.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  padding: 2px 7px;
-  border-radius: 3px;
-  white-space: nowrap;
-  border: 1px solid var(--border);
-  color: var(--text-mute);
-}
-
-#proteus-workbench .news-badge.live {
-  color: var(--crit);
-  border-color: rgba(255, 90, 90, 0.45);
 }
 
 #proteus-workbench .news-title {
@@ -1866,7 +2075,7 @@
 #proteus-workbench .intel-link {
   color: var(--accent-text);
   text-decoration: none;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -1903,7 +2112,7 @@
   flex-direction: column;
   gap: 2px;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(42, 39, 37, 0.7);
+  border-bottom: 1px solid var(--border);
 }
 
 #proteus-workbench .osint-link-item:last-child {
@@ -1918,13 +2127,13 @@
 }
 
 #proteus-workbench .osint-source {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--text);
 }
 
 #proteus-workbench .osint-desc {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text-mute);
 }
 
@@ -1934,6 +2143,16 @@
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 20px;
+}
+
+#proteus-workbench .osint-selector-row select {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  color: var(--text);
+  padding: 8px 12px;
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  border-radius: 5px;
 }
 
 #proteus-workbench .osint-conclusions,
@@ -1950,8 +2169,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(42, 39, 37, 0.7);
-  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
 }
 
 #proteus-workbench .conclusion-item:last-child {
@@ -1960,7 +2179,6 @@
 
 #proteus-workbench .conclusion-key {
   color: var(--text-mute);
-  text-transform: uppercase;
 }
 
 #proteus-workbench .conclusion-val {
@@ -1975,12 +2193,10 @@
   margin-bottom: 12px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 10px;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 #proteus-workbench .osint-section-title {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--accent-text);
 }
@@ -1992,12 +2208,12 @@
 
 #proteus-workbench .osint-source-row {
   display: grid;
-  grid-template-columns: 200px 1fr auto;
+  grid-template-columns: 190px 1fr auto;
   gap: 16px;
   align-items: center;
   padding: 9px 0;
-  border-bottom: 1px solid rgba(42, 39, 37, 0.7);
-  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
 }
 
 #proteus-workbench .osint-source-row:last-child {
@@ -2006,55 +2222,18 @@
 
 #proteus-workbench .osint-source-name {
   color: var(--text);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
+  font-weight: 500;
 }
 
 #proteus-workbench .osint-source-conclusion {
   color: var(--text-dim);
 }
 
-#proteus-workbench .relevance {
-  font-size: 10px;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 3px;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-}
-
-#proteus-workbench .relevance.rel-lowmedium { border-color: var(--low); color: var(--low); }
-#proteus-workbench .relevance.rel-medium { border-color: var(--watch); color: var(--watch); }
-#proteus-workbench .relevance.rel-high { border-color: var(--high); color: var(--high); }
-#proteus-workbench .relevance.rel-veryhigh { border-color: var(--crit); color: var(--crit); }
-
-#proteus-workbench .technique-tag {
-  display: inline-block;
-  padding: 3px 9px;
-  border-radius: 4px;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  border: 1px solid var(--border-2);
-  color: var(--text-dim);
-  white-space: nowrap;
-}
-
-#proteus-workbench .technique-tag.imp-vhigh { border-color: rgba(255, 90, 90, 0.5); color: var(--crit); }
-#proteus-workbench .technique-tag.imp-high { border-color: rgba(255, 154, 60, 0.5); color: var(--high); }
-#proteus-workbench .technique-tag.imp-med { border-color: rgba(255, 200, 87, 0.5); color: var(--watch); }
-#proteus-workbench .technique-tag.imp-low { border-color: rgba(109, 217, 138, 0.5); color: var(--low); }
-
-/* ============================================================
-   MODAL
-   ============================================================ */
+/* Modal */
 #proteus-workbench .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2067,7 +2246,7 @@
   background: var(--surface);
   border: 1px solid var(--border-2);
   border-radius: 8px;
-  max-width: 880px;
+  max-width: 860px;
   width: 100%;
   max-height: 90vh;
   display: flex;
@@ -2110,6 +2289,7 @@
   margin: 0;
   padding: 20px 24px;
   background: var(--bg);
+  font-family: var(--font-data);
   font-size: 12px;
   color: var(--text-dim);
   line-height: 1.65;
@@ -2126,27 +2306,27 @@
   border-top: 1px solid var(--border);
 }
 
-/* ============================================================
-   SCROLLBARS
-   ============================================================ */
+/* Scrollbars */
 #proteus-workbench *::-webkit-scrollbar { width: 8px; height: 8px; }
 #proteus-workbench *::-webkit-scrollbar-track { background: var(--bg); }
 #proteus-workbench *::-webkit-scrollbar-thumb {
   background: var(--border-2);
   border-radius: 4px;
 }
-#proteus-workbench *::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 980px) {
-  #proteus-workbench {
-    padding: 52px 4vw 68px;
-  }
-  #proteus-workbench .wb-container {
+@media (max-width: 1020px) {
+  #proteus-workbench .wb-dashboard-screen {
     height: auto;
-    overflow: visible;
+    min-height: 100vh;
+  }
+  #proteus-workbench .wb-dash-topbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 14px;
+    gap: 10px;
   }
   #proteus-workbench .split-layout {
     flex-direction: column;
@@ -2155,7 +2335,7 @@
   #proteus-workbench .list-pane {
     width: 100%;
     min-width: 0;
-    max-height: 44vh;
+    max-height: 40vh;
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
@@ -2175,20 +2355,5 @@
   #proteus-workbench .osint-source-row {
     grid-template-columns: 1fr;
     gap: 4px;
-  }
-  #proteus-workbench .kpi-bar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  #proteus-workbench .kpi-box {
-    border-right: none;
-    margin-right: 0;
-    padding: 14px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  #proteus-workbench .topbar {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 10px 14px;
-    gap: 8px;
   }
 }

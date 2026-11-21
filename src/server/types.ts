@@ -4,7 +4,8 @@ export type FindingStatus =
   | 'LIVE INFRA'
   | 'PRECRIME'
   | 'DRIFT DETECTED'
-  | 'UNRESOLVED';
+  | 'UNRESOLVED'
+  | 'SAFE';
 
 export type ScanState = 'pending' | 'running' | 'complete' | 'failed';
 
@@ -218,6 +219,7 @@ export interface ScanRequest {
   online_enrich: boolean;
   inspect_websites: boolean;
   allowlist: string[];
+  max_candidates?: number;
 }
 
 export interface ScanResults {

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
@@ -16,9 +17,9 @@ import {
   getOsintIntel,
   getPrecrimeRisk,
 } from './src/server/intel.ts';
-import { isValidDomainInput, toAscii } from './src/server/normalize.ts';
+import { isValidDomainInput, normalize, registrableDomain, toAscii } from './src/server/normalize.ts';
 import { generateCandidates } from './src/server/permutations.ts';
-import { DynamicResolver } from './src/server/resolver.ts';
+import { DynamicResolver, resolveTargetBaseline } from './src/server/resolver.ts';
 import { analyzeCandidate } from './src/server/scoring.ts';
 import { sortFindings, tierCounts } from './src/server/triage.ts';
 import type {
@@ -87,6 +88,7 @@ function toEnrichedSchema(
   let status: FindingStatus;
   if (drift) status = 'DRIFT DETECTED';
   else if (precrime !== null) status = 'PRECRIME';
+  else if (isLive && f.score <= 15) status = 'SAFE';
   else if (isLive) status = 'LIVE INFRA';
   else status = 'UNRESOLVED';
 
@@ -141,9 +143,13 @@ async function runScanJob(scanId: string): Promise<void> {
     job.current_step = 'generating candidates';
 
     const resolver = new DynamicResolver(req.online_enrich);
-    const candidates = generateCandidates(req.brand, 2000);
+    const maxCandidates = Math.max(10, Math.min(500, req.max_candidates ?? 50));
+    const candidates = generateCandidates(req.brand, maxCandidates);
     const allowlist = new Set(req.allowlist.map((n) => toAscii(n).toLowerCase()));
-    allowlist.add(toAscii(req.brand).toLowerCase());
+    const normalizedBrand = toAscii(normalize(req.brand)).toLowerCase();
+    allowlist.add(normalizedBrand);
+    const isDemoFixtureBrand =
+      normalizedBrand === 'acmecorp.com' || normalizedBrand === 'pashabank.az';
 
     job.domains_total = candidates.length;
     job.updated_at = new Date().toISOString();
@@ -151,12 +157,40 @@ async function runScanJob(scanId: string): Promise<void> {
     let liveSet: Set<string> | null = null;
     if (req.online_enrich) {
       const highValue = candidates
-        .filter((c) => c.weight >= 70 && !allowlist.has(c.registrable.toLowerCase()))
+        .filter((c) => c.weight >= 65 && !allowlist.has(c.registrable.toLowerCase()))
         .map((c) => c.registrable);
       liveSet = selectLivePrioritySet(highValue);
     }
 
     const findings: Finding[] = [];
+
+    // Resolve scanned target domain itself as verified baseline
+    job.current_step = `checking ${normalizedBrand}`;
+    const baseline = await resolveTargetBaseline(normalizedBrand);
+    if (baseline.facts) {
+      const targetCandidate = {
+        domain: normalizedBrand,
+        ascii_form: normalizedBrand,
+        registrable: registrableDomain(normalizedBrand),
+        family: 'baseline',
+        rule: 'target_baseline',
+        technique: 'target_domain',
+        importance: 'Low',
+        weight: 0,
+        provenance: { role: 'target' },
+      };
+      const targetFinding = analyzeCandidate(
+        req.brand,
+        targetCandidate,
+        baseline.facts,
+        undefined,
+        baseline.enrichment
+      );
+      if (targetFinding) {
+        findings.push(targetFinding);
+      }
+    }
+
     for (let i = 0; i < candidates.length; i++) {
       const c = candidates[i];
       if (allowlist.has(c.registrable.toLowerCase())) {
@@ -170,7 +204,11 @@ async function runScanJob(scanId: string): Promise<void> {
         job.updated_at = new Date().toISOString();
       }
 
-      const shouldResolveLive = !req.online_enrich || Boolean(liveSet?.has(c.registrable));
+      const skipSyntheticSubdomainFixture =
+        !req.online_enrich && !isDemoFixtureBrand && c.technique === 'subdomain_impersonation';
+      const shouldResolveLive =
+        !skipSyntheticSubdomainFixture &&
+        (!req.online_enrich || Boolean(liveSet?.has(c.registrable)));
       const { facts, enrichment } = shouldResolveLive
         ? await resolver.resolve(c.registrable, c.registrable)
         : { facts: null, enrichment: null };
@@ -192,6 +230,16 @@ async function runScanJob(scanId: string): Promise<void> {
     job.updated_at = new Date().toISOString();
 
     const ordered = sortFindings(findings);
+    // If there are no CRITICAL/HIGH/WATCH alerts, lift the verified target baseline first
+    // so the inspector opens immediately to the scanned domain's live IP & safe posture.
+    const hasElevated = ordered.some((f) => f.tier !== 'LOW');
+    if (!hasElevated) {
+      const baselineIdx = ordered.findIndex((f) => f.candidate.rule === 'target_baseline');
+      if (baselineIdx > 0) {
+        const [baselineItem] = ordered.splice(baselineIdx, 1);
+        ordered.unshift(baselineItem);
+      }
+    }
     const geo = buildGeoData(ordered);
     const clusters = buildCampaignClusters(ordered);
     const impact = calculateAggregateImpact(ordered);
@@ -229,6 +277,7 @@ async function runScanJob(scanId: string): Promise<void> {
 
 async function startServer(): Promise<void> {
   const app = express();
+  const httpServer = http.createServer(app);
   app.use(express.json({ limit: '256kb' }));
 
   app.post('/api/scan', (req, res) => {
@@ -243,6 +292,10 @@ async function startServer(): Promise<void> {
     const scanPass = body.scan_pass === 2 ? 2 : 1;
     const onlineEnrich = Boolean(body.online_enrich);
     const inspectWebsites = Boolean(body.inspect_websites);
+    const maxCandidates =
+      typeof body.max_candidates === 'number' && Number.isFinite(body.max_candidates)
+        ? Math.max(10, Math.min(500, Math.round(body.max_candidates)))
+        : 50;
     const allowlist = Array.isArray(body.allowlist)
       ? body.allowlist.filter((item): item is string => typeof item === 'string' && isValidDomainInput(item)).slice(0, 50)
       : [];
@@ -258,6 +311,7 @@ async function startServer(): Promise<void> {
         online_enrich: onlineEnrich,
         inspect_websites: inspectWebsites,
         allowlist,
+        max_candidates: maxCandidates,
       },
       state: 'pending',
       progress_pct: 0,
@@ -437,7 +491,10 @@ async function startServer(): Promise<void> {
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        ws: { server: httpServer },
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -452,7 +509,7 @@ async function startServer(): Promise<void> {
   }
 
   const port = Number(process.env.PORT || 3000);
-  app.listen(port, '0.0.0.0', () => {
+  httpServer.listen(port, '0.0.0.0', () => {
     console.log(`PROTEUS server listening on http://0.0.0.0:${port}`);
   });
 }

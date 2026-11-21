@@ -916,10 +916,10 @@ export function createProteusScene3D(mountEl, options = {}) {
     requestRender();
   }
 
-  function playScrollEntrance() {
-    currentStepIndex = 0;
+  function playScrollEntrance(stepIdx = currentStepIndex) {
+    currentStepIndex = Math.max(0, Math.min(WALKTHROUGH_STEPS.length - 1, stepIdx));
     stepElapsed = 0;
-    const s = WALKTHROUGH_STEPS[0];
+    const s = WALKTHROUGH_STEPS[currentStepIndex];
     camera.position.set(s.camera.position[0] - 4.5, s.camera.position[1] + 5.5, s.camera.position[2] + 6.5);
     controls.target.set(0, 0, 0);
     controls.update();

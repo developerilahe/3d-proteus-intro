@@ -381,7 +381,7 @@ export function WorldThreatMap({
                         cy={y}
                         r={r}
                         fill={pinFill}
-                        stroke="#0d0d0d"
+                        stroke="#07080A"
                         strokeWidth="1.5"
                       />
                       {/* Pill Label for Guaranteed Contrast */}
@@ -391,9 +391,9 @@ export function WorldThreatMap({
                         width={pillW}
                         height={17}
                         rx={3}
-                        fill="#0d0d0d"
+                        fill="#07080A"
                         fillOpacity={0.92}
-                        stroke={isSelected ? '#7d82ff' : '#2f2b28'}
+                        stroke={isSelected ? '#7d82ff' : '#1E2430'}
                         strokeWidth={isSelected ? 1.1 : 0.8}
                       />
                       <text
@@ -418,15 +418,15 @@ export function WorldThreatMap({
           <div id="geo-legend" className="geo-legend">
             <div className="legend-item">
               <span className="legend-dot" style={{ background: 'var(--crit)' }} />
-              <span>Critical (&gt;3 live)</span>
+              <span>Critical (&gt;3 active)</span>
             </div>
             <div className="legend-item">
               <span className="legend-dot" style={{ background: 'var(--watch)' }} />
-              <span>Active (1–3 live)</span>
+              <span>Active (1–3 active)</span>
             </div>
             <div className="legend-item">
               <span className="legend-dot" style={{ background: 'var(--low)' }} />
-              <span>Unresolved</span>
+              <span>Low / Inactive</span>
             </div>
             <div className="legend-summary">
               {geo.length} regions · {totalMapped} domains · {totalThreats} threats

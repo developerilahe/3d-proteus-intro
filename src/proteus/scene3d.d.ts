@@ -15,7 +15,7 @@ export interface ProteusScene3DOptions {
 
 export interface ProteusScene3DHandle {
   setStep: (index: number, focusCamera?: boolean) => void;
-  playScrollEntrance: () => void;
+  playScrollEntrance: (stepIndex?: number) => void;
   dispose: () => void;
 }
 

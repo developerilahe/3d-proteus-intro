@@ -1,4 +1,4 @@
-/* PROTEUS Editorial CodePen-Inspired Styles (#0d0d0d, #b6b6b6, #4246ce, #2f2b28, Poppins) */
+/* PROTEUS Editorial Styles (#07080A, #101318, #4246ce, Inter + JetBrains Mono) */
 
 /* ============================================================
    SECTION 1: 3D VOXEL INTRO HERO
@@ -8,11 +8,11 @@
   width: 100%;
   height: 100vh;
   min-height: 600px;
-  background-color: #0d0d0d;
+  background-color: #07080A;
   color: #b6b6b6;
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   overflow: hidden;
-  border-bottom: 1px solid #2f2b28;
+  border-bottom: 1px solid #1E2430;
 }
 
 .voxel-canvas {
@@ -38,12 +38,12 @@
 }
 
 .voxel-kicker {
-  font-family: 'Poppins', system-ui, sans-serif;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.26em;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #7d82ff;
+  color: #8b93a7;
 }
 
 .voxel-narrative {
@@ -52,19 +52,18 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  width: min(640px, calc(100vw - 36px));
+  width: min(600px, calc(100vw - 36px));
   text-align: center;
   pointer-events: none;
 }
 
 .voxel-caption {
   margin: 0;
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 13.5px;
   font-weight: 400;
   line-height: 1.55;
-  letter-spacing: 0.015em;
-  color: rgba(182, 182, 182, 0.78);
+  color: rgba(203, 210, 224, 0.78);
   animation: voxelCaptionFade 0.45s ease forwards;
 }
 
@@ -90,9 +89,9 @@
   gap: 8px;
   max-width: calc(100vw - 24px);
   padding: 7px 12px;
-  background-color: #141416;
-  border: 1px solid #2f2b28;
-  border-radius: 6px;
+  background-color: #101318;
+  border: 1px solid #1E2430;
+  border-radius: 8px;
   overflow-x: auto;
 }
 
@@ -109,13 +108,13 @@
   border-radius: 2px;
   border: none;
   padding: 0;
-  background-color: #2f2b28;
+  background-color: #262d3b;
   cursor: pointer;
   transition: width 180ms ease, background-color 180ms ease;
 }
 
 .voxel-slide-dot:hover {
-  background-color: rgba(182, 182, 182, 0.6);
+  background-color: rgba(182, 192, 210, 0.6);
 }
 
 .voxel-slide-dot.is-active {
@@ -126,7 +125,7 @@
 .voxel-dock-sep {
   width: 1px;
   height: 20px;
-  background-color: #2f2b28;
+  background-color: #1E2430;
   flex-shrink: 0;
 }
 
@@ -136,13 +135,12 @@
   gap: 5px;
   padding: 6px 11px;
   background: transparent;
-  border: 1px solid #2f2b28;
-  border-radius: 4px;
-  font-family: 'Poppins', system-ui, sans-serif;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #b6b6b6;
+  border: 1px solid #232a38;
+  border-radius: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #c2c8d6;
   cursor: pointer;
   white-space: nowrap;
   transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
@@ -151,7 +149,7 @@
 .voxel-btn-ghost:hover {
   border-color: #4246ce;
   color: #ffffff;
-  background-color: #1b1b22;
+  background-color: #151921;
 }
 
 .voxel-btn-primary {
@@ -161,11 +159,10 @@
   padding: 6px 13px;
   background-color: #4246ce;
   border: 1px solid #4246ce;
-  border-radius: 4px;
-  font-family: 'Poppins', system-ui, sans-serif;
-  font-size: 11.5px;
+  border-radius: 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.04em;
   color: #ffffff;
   cursor: pointer;
   white-space: nowrap;
@@ -173,8 +170,8 @@
 }
 
 .voxel-btn-primary:hover {
-  background-color: #5b5fe6;
-  border-color: #5b5fe6;
+  background-color: #5559e0;
+  border-color: #5559e0;
   color: #ffffff;
 }
 
@@ -184,13 +181,13 @@
 }
 
 /* ============================================================
-   SECTION 2: CODEPEN SCROLL-REVEAL & CLIP-PATH WIPE MANIFESTO
+   SECTION 2: SCROLL-REVEAL & CLIP-PATH WIPE MANIFESTO
    ============================================================ */
 .manifesto-band {
-  background-color: #0d0d0d;
-  padding: 9vh 6vw;
-  font-family: 'Poppins', system-ui, sans-serif;
-  border-bottom: 1px solid #2f2b28;
+  background-color: #131417;
+  padding: 8vh 6vw;
+  font-family: 'Inter', system-ui, sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .manifesto-band .cp-container {
@@ -198,8 +195,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
+  gap: 12px;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1360px;
   margin: 0 auto;
 }
 
@@ -210,31 +208,58 @@
   align-items: center;
   width: 100%;
   margin: 0;
-  padding: 0.24em 0;
-  background: transparent;
+  padding: 0.42em 0.55em;
+  background: radial-gradient(
+      closest-corner,
+      oklab(27.722% -0.00023 -0.01543 / 0.12) 10%,
+      oklab(27.722% -0.00023 -0.01543 / 0.72) 90%
+    ),
+    rgba(19, 20, 23, 0.72);
+  backdrop-filter: blur(8px);
   border: none;
-  border-bottom: 1px solid #2f2b28;
+  border-radius: 16px;
   text-align: left;
   cursor: pointer;
   overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
 }
 
-.manifesto-band .cp-row-btn:first-child {
-  border-top: 1px solid #2f2b28;
+.manifesto-band .cp-row-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #b169db 15%, #f7d152 45%, #46cf71 70%, #0fbffa 95%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.52;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.manifesto-band .cp-row-btn:hover::before,
+.manifesto-band .cp-row-btn:focus-visible::before {
+  opacity: 0.9;
 }
 
 .manifesto-band .cp-row-base {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
-  font-family: 'Poppins', system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.85rem, 6.4vw, 6.2rem);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 3.6vw, 3.4rem);
   letter-spacing: -0.025em;
-  line-height: 1.05;
+  line-height: 1.15;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  color: rgba(182, 182, 182, 0.2);
-  background: linear-gradient(to right, #b6b6b6, #b6b6b6) no-repeat;
+  color: rgba(182, 192, 210, 0.24);
+  background: linear-gradient(to right, #f3f5f8, #f3f5f8) no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   background-size: var(--reveal-pct, 0%) 100%;
@@ -244,29 +269,31 @@
 .manifesto-band .cp-row-wipe {
   position: absolute;
   inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
-  padding: 0 0.22em;
-  background-color: #4246ce;
-  color: #0d0d0d;
+  padding: 0 0.72em;
+  border-radius: 16px;
+  background: linear-gradient(110deg, rgba(177, 105, 219, 0.92) 0%, rgba(70, 207, 113, 0.88) 55%, rgba(15, 191, 250, 0.92) 100%);
+  color: #131417;
 
-  font-family: 'Poppins', system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.35rem, 4.4vw, 4.3rem);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 2.8vw, 2.5rem);
   letter-spacing: -0.02em;
-  line-height: 1;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 
   display: flex;
   align-items: center;
   pointer-events: none;
 
-  /* Strictly hidden until hover/focus so base and hover text never mix */
   opacity: 0;
   clip-path: inset(50% 0 50% 0);
   transition:
-    clip-path 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+    clip-path 0.32s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.16s ease;
 }
 
@@ -277,7 +304,7 @@
 }
 
 .manifesto-band .cp-row-btn:focus-visible {
-  outline: 2px solid #4246ce;
+  outline: 2px solid #f7d152;
   outline-offset: 4px;
 }
 
@@ -292,9 +319,9 @@
     padding: 6vh 5vw;
   }
   .manifesto-band .cp-row-base {
-    font-size: clamp(1.45rem, 7.2vw, 2.5rem);
+    font-size: clamp(1.15rem, 5.5vw, 2.1rem);
   }
   .manifesto-band .cp-row-wipe {
-    font-size: clamp(1.05rem, 5.2vw, 1.85rem);
+    font-size: clamp(0.95rem, 4.4vw, 1.65rem);
   }
 }

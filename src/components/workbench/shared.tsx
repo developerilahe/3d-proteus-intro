@@ -1,5 +1,11 @@
 import { Fragment } from 'react';
-import type { DomainEnrichmentDto, LookupResultDto, SignalDto } from '../../types/proteus-api.ts';
+import type {
+  DomainEnrichmentDto,
+  FindingDto,
+  FindingStatus,
+  LookupResultDto,
+  SignalDto,
+} from '../../types/proteus-api.ts';
 
 export const LOOKUP_STATUS_LABELS: Record<string, string> = {
   found: 'Found',
@@ -13,6 +19,81 @@ export function formatTechnique(technique: string): string {
   return technique
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function formatStatusLabel(status: FindingStatus): string {
+  switch (status) {
+    case 'SAFE':
+      return 'Safe';
+    case 'LIVE INFRA':
+      return 'Active Site';
+    case 'PRECRIME':
+      return 'Early Warning';
+    case 'DRIFT DETECTED':
+      return 'Sudden Change';
+    case 'UNRESOLVED':
+    default:
+      return 'Inactive';
+  }
+}
+
+export function formatRiskLevel(score: number, status?: FindingStatus): string {
+  if (status === 'SAFE' || score <= 15) return 'Safe / Low';
+  if (score <= 54) return 'Watch';
+  if (score <= 74) return 'High Risk';
+  return 'Critical';
+}
+
+export function getPrimaryIp(finding: FindingDto): string {
+  const fromFacts = finding.facts?.a_records?.[0];
+  if (fromFacts) return fromFacts;
+  const fromLive = finding.enrichment?.dns?.a?.data?.[0];
+  if (fromLive) return fromLive;
+  return 'No active IP';
+}
+
+export function isLiveFinding(finding: FindingDto): boolean {
+  return Boolean(
+    finding.facts?.is_live ||
+      (finding.enrichment?.dns?.a?.data?.length ?? 0) > 0 ||
+      (finding.enrichment?.dns?.aaaa?.data?.length ?? 0) > 0 ||
+      (finding.enrichment?.dns?.mx?.data?.length ?? 0) > 0
+  );
+}
+
+export function getPlainTakeaway(finding: FindingDto): string {
+  if (finding.status === 'SAFE') {
+    return 'Active, legitimate domain with standard configuration.';
+  }
+  if (!isLiveFinding(finding)) {
+    return 'This lookalike is not hosting a website or email server.';
+  }
+  if (finding.status === 'DRIFT DETECTED') {
+    return 'Recently changed from a quiet page to an active site.';
+  }
+  if (finding.status === 'PRECRIME') {
+    return 'Newly active lookalike showing early impersonation signs.';
+  }
+  if (finding.score >= 75) {
+    return 'Live lookalike closely matching your brand with active impersonation signs.';
+  }
+  if (finding.score >= 55) {
+    return 'Resolves to an active server and warrants closer review.';
+  }
+  return 'Low-risk variation with no immediate signs of abuse.';
+}
+
+export function getRecommendedStep(finding: FindingDto): string {
+  if (finding.status === 'SAFE') {
+    return 'No action needed. Keep this domain as your safe baseline.';
+  }
+  if (!isLiveFinding(finding)) {
+    return 'No action needed now. Monitor for future activation.';
+  }
+  if (finding.score >= 55) {
+    return 'Inspect the site and issue a takedown notice if unauthorized.';
+  }
+  return 'Keep on your watch list and check again for sudden changes.';
 }
 
 export function importanceClass(imp: string): string {
@@ -55,10 +136,7 @@ export function computeScoreBuckets(signals: SignalDto[]): ScoreBuckets {
   for (const s of signals) {
     if (s.key === 'technique_baseline') {
       technique += s.points;
-    } else if (
-      s.key === 'lure_present' ||
-      s.key === 'technique_combo'
-    ) {
+    } else if (s.key === 'lure_present' || s.key === 'technique_combo') {
       lure += s.points;
     } else if (
       s.key === 'a_record' ||
@@ -89,7 +167,7 @@ export function DomainWithConfusables({ domain }: { domain: string }) {
       {chars.map((ch, idx) => {
         const isNonAscii = (ch.codePointAt(0) ?? 0) > 0x7f;
         return isNonAscii ? (
-          <span key={idx} className="confusable" title="Non-ASCII homoglyph character">
+          <span key={idx} className="confusable" title="Lookalike non-Latin character">
             {ch}
           </span>
         ) : (
@@ -178,7 +256,7 @@ export function LiveDnsSection({ enrichment }: { enrichment: DomainEnrichmentDto
           {enrichment.collection_note}
         </p>
       )}
-      <LookupRowsBlock label="RDAP" result={enrichment.rdap} fields={rdapFields} />
+      <LookupRowsBlock label="Registration (RDAP)" result={enrichment.rdap} fields={rdapFields} />
       {Object.entries(enrichment.dns).map(([type, result]) => (
         <LookupRowsBlock
           key={type}
@@ -188,7 +266,7 @@ export function LiveDnsSection({ enrichment }: { enrichment: DomainEnrichmentDto
         />
       ))}
       <LookupRowsBlock
-        label="Certificate Transparency"
+        label="SSL Certificates"
         result={enrichment.certificates}
         fields={certFields}
       />
@@ -204,7 +282,7 @@ export function LiveIpSection({
   if (!infrastructure.length) {
     return (
       <p style={{ color: 'var(--text-mute)' }}>
-        No addresses available for infrastructure lookup.
+        No active IP addresses found.
       </p>
     );
   }
@@ -215,18 +293,18 @@ export function LiveIpSection({
         return (
           <Fragment key={ip.address}>
             <LookupRowsBlock
-              label={`${ip.address} registration`}
+              label={`${ip.address} Network`}
               result={ip.registration}
               fields={[
                 ['Allocation name', net.name],
                 ['Registry handle', net.handle],
                 ['Range start', net.start_address],
                 ['Range end', net.end_address],
-                ['Registration country', net.country_code],
+                ['Country', net.country_code],
               ]}
             />
             <LookupRowsBlock
-              label={`${ip.address} PTR`}
+              label={`${ip.address} Reverse DNS`}
               result={ip.ptr}
               fields={[['Names', ip.ptr.data]]}
             />
